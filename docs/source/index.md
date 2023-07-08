@@ -29,7 +29,11 @@ This paper presents a systematic and computationally simple approach to construc
 Latest version: [here](https://arxiv.org/abs/2304.08586).  
 *IEEE Robotics & Automation Letters (RA-L), 2023*
 
-[![alt text](_static/ra-l_paper.png)](https://arxiv.org/abs/2304.08586)
+[![Paper PDF](_static/ra-l_paper.png)](https://arxiv.org/abs/2304.08586)
+
+<a href="https://github.com/BolunDai0216/DifferentiableOptimizationCBF">
+  <img src="_static/github-mark.png" alt="Link to GitHub Repo" width="50"/>
+</a>
 
 ---
 
