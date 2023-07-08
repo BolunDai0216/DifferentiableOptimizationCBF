@@ -16,14 +16,9 @@ from DifferentiableOptimizationCBF.exp_utils import (
     get_Q_mat,
 )
 
-# load Julia functions
-create_arm = Main.include("dc_utils/create_arm_ellipsoid.jl")
-three_blocks_exp_setup = Main.include("dc_utils/three_blocks_exp_setup.jl")
-get_cbf_three_blocks = Main.include("dc_utils/get_cbf_three_blocks.jl")
-
 
 class BaseController:
-    def __init__(self):
+    def __init__(self, crude_type="ellipsoid"):
         # load URDF file
         self.fr3env_dir = FR3Env.getDataPath()
         self.fr3_urdf = self.fr3env_dir + "/robots/fr3_crude.urdf"
@@ -41,7 +36,43 @@ class BaseController:
         self.FR3_LINK6_FRAME_ID = 14
         self.FR3_LINK7_FRAME_ID = 16
         self.FR3_HAND_FRAME_ID = 20
-        self.EE_FRAME_ID = 26
+
+        # save the frame ids in a list
+        self.frame_ids = [
+            self.FR3_LINK3_FRAME_ID,
+            self.FR3_LINK4_FRAME_ID,
+            self.FR3_LINK5_FRAME_ID,
+            self.FR3_LINK5_FRAME_ID,
+            self.FR3_LINK6_FRAME_ID,
+            self.FR3_LINK7_FRAME_ID,
+            self.FR3_HAND_FRAME_ID,
+        ]
+
+        self.frame_names = [
+            "LINK3",
+            "LINK4",
+            "LINK5_1",
+            "LINK5_2",
+            "LINK6",
+            "LINK7",
+            "HAND",
+        ]
+
+        # get the bounding primitive rotation offsets
+        self.R_offset = {}
+        for name in self.frame_names:
+            self.R_offset[name] = np.eye(3)
+
+        # get the bounding primitive position offsets
+        self.P_offset = {
+            "LINK3": np.array([[0.0], [0.0], [-0.145]]),
+            "LINK4": np.array([[0.0], [0.0], [0.0]]),
+            "LINK5_1": np.array([[0.0], [0.0], [-0.26]]),
+            "LINK5_2": np.array([[0.0], [0.08], [-0.13]]),
+            "LINK6": np.array([[0.0], [0.0], [-0.03]]),
+            "LINK7": np.array([[0.0], [0.0], [0.01]]),
+            "HAND": np.array([[0.0], [0.0], [0.06]]),
+        }
 
         # set nominal joint angles
         self.q_nominal = np.array(
@@ -58,11 +89,18 @@ class BaseController:
             ]
         )
 
-        # define the polytopes
-        three_blocks_exp_setup()
+        # load Julia functions
+        if crude_type == "ellipsoid":
+            create_arm = Main.include("dc_utils/create_arm_ellipsoid.jl")
+        elif crude_type == "capsule":
+            create_arm = Main.include("dc_utils/create_arm_capsule.jl")
 
-        # define the robot links
+        exp_setup = Main.include("dc_utils/three_blocks_exp_setup.jl")
+        self.get_cbf = Main.include("dc_utils/get_cbf_three_blocks.jl")
+
+        # setup everything in Julia
         create_arm()
+        exp_setup()
 
         # define solver
         self.solver = CBFQPSolver(9, 0, 21)
@@ -76,17 +114,17 @@ class BaseController:
         if not self.initialized:
             self.initialize_trajectory(
                 t,
-                info["P_EE"],
-                info["R_EE"],
+                info["P_HAND"],
+                info["R_HAND"],
                 np.array([[0.7], [0.05], [0.1]]),
                 (0.0, 0.0, 0.0),
             )
 
         # get end-effector position
-        p_current = info["P_EE"][:, np.newaxis]
+        p_current = info["P_HAND"][:, np.newaxis]
 
         # get end-effector orientation
-        R_current = info["R_EE"]
+        R_current = info["R_HAND"]
 
         # get Jacobians from info
         pinv_jac = info["pJ_HAND"]
@@ -113,30 +151,22 @@ class BaseController:
         rs, qs = self.compute_rs_qs(info)
 
         # compute α's and J's
-        _αs, Js = get_cbf_three_blocks(rs, qs)
+        _αs, Js = self.get_cbf(rs, qs)
 
         # compute α's and J's
         αs = []
         Cs = []
 
-        for k, link in enumerate(
-            ["link3", "link4", "link5_1", "link5_2", "link6", "link7", "hand"]
-        ):
-            _Q_mat_link = get_Q_mat(info[f"q_{link.upper()}"])
+        for k, link in enumerate(self.frame_names):
+            _Q_mat_link = get_Q_mat(info[f"q_{link}"])
             Q_mat_link = block_diag(np.eye(3), 0.5 * _Q_mat_link)
 
             for j in range(3):
                 α, J_link = _αs[j][k], np.array(Js[j][k])
                 αs.append(copy.deepcopy(α))
-
-                if link == "hand":
-                    Cs.append(J_link[-1, 7:][np.newaxis, :] @ Q_mat_link @ jacobian)
-                else:
-                    Cs.append(
-                        J_link[-1, 7:][np.newaxis, :]
-                        @ Q_mat_link
-                        @ info[f"J_{link.upper()}"]
-                    )
+                Cs.append(
+                    J_link[-1, 7:][np.newaxis, :] @ Q_mat_link @ info[f"J_{link}"]
+                )
 
         lb = -5.0 * (np.array(αs)[:, np.newaxis] - 1.03)
         C = np.concatenate(Cs, axis=0)
@@ -163,96 +193,23 @@ class BaseController:
         return dq_target, info
 
     def get_info(self, q, dq):
-        # Get Jacobians, preprocessing is done in update_pinocchio()
-        jacobian_link3 = self.robot.getFrameJacobian(
-            self.FR3_LINK3_FRAME_ID, self.jacobian_frame
-        )
-        jacobian_link4 = self.robot.getFrameJacobian(
-            self.FR3_LINK4_FRAME_ID, self.jacobian_frame
-        )
-        jacobian_link5_1 = self.robot.getFrameJacobian(
-            self.FR3_LINK5_FRAME_ID, self.jacobian_frame
-        )
-        jacobian_link5_2 = self.robot.getFrameJacobian(
-            self.FR3_LINK5_FRAME_ID, self.jacobian_frame
-        )
-        jacobian_link6 = self.robot.getFrameJacobian(
-            self.FR3_LINK6_FRAME_ID, self.jacobian_frame
-        )
-        jacobian_link7 = self.robot.getFrameJacobian(
-            self.FR3_LINK7_FRAME_ID, self.jacobian_frame
-        )
-        jacobian_hand = self.robot.getFrameJacobian(
-            self.EE_FRAME_ID, self.jacobian_frame
-        )
+        info = {}
+
+        for idx, name in zip(self.frame_ids, self.frame_names):
+            info[f"J_{name}"] = self.robot.getFrameJacobian(idx, self.jacobian_frame)
+
+            # compute the position and rotation of the crude models
+            (
+                info[f"P_{name}"],
+                info[f"R_{name}"],
+                info[f"q_{name}"],
+            ) = self.compute_crude_location(
+                self.R_offset[name], self.P_offset[name], idx
+            )
 
         # Get pseudo-inverse of hand Jacobian
-        pinv_jacobian_hand = np.linalg.pinv(jacobian_hand)
-
-        # compute the position and rotation of the crude models
-        p_link3, R_link3, q_LINK3 = self.compute_crude_location(
-            np.eye(3), np.array(([0.0], [0.0], [-0.145])), self.FR3_LINK3_FRAME_ID
-        )
-
-        p_link4, R_link4, q_LINK4 = self.compute_crude_location(
-            np.eye(3), np.array(([0.0], [0.0], [0.0])), self.FR3_LINK4_FRAME_ID
-        )
-
-        p_link5_1, R_link5_1, q_LINK5_1 = self.compute_crude_location(
-            np.eye(3), np.array(([0.0], [0.0], [-0.26])), self.FR3_LINK5_FRAME_ID
-        )
-
-        p_link5_2, R_link5_2, q_LINK5_2 = self.compute_crude_location(
-            np.eye(3), np.array(([0.0], [0.08], [-0.13])), self.FR3_LINK5_FRAME_ID
-        )
-
-        p_link6, R_link6, q_LINK6 = self.compute_crude_location(
-            np.eye(3), np.array(([0.0], [0.0], [-0.03])), self.FR3_LINK6_FRAME_ID
-        )
-
-        p_link7, R_link7, q_LINK7 = self.compute_crude_location(
-            np.eye(3), np.array(([0.0], [0.0], [0.01])), self.FR3_LINK7_FRAME_ID
-        )
-
-        p_hand, R_hand, q_HAND = self.compute_crude_location(
-            np.eye(3), np.array(([0.0], [0.0], [0.06])), self.FR3_HAND_FRAME_ID
-        )
-
-        info = {
-            "q": q,
-            "dq": dq,
-            "R_LINK3": copy.deepcopy(R_link3),
-            "P_LINK3": copy.deepcopy(p_link3),
-            "q_LINK3": copy.deepcopy(q_LINK3),
-            "J_LINK3": jacobian_link3,
-            "R_LINK4": copy.deepcopy(R_link4),
-            "P_LINK4": copy.deepcopy(p_link4),
-            "q_LINK4": copy.deepcopy(q_LINK4),
-            "J_LINK4": jacobian_link4,
-            "R_LINK5_1": copy.deepcopy(R_link5_1),
-            "P_LINK5_1": copy.deepcopy(p_link5_1),
-            "q_LINK5_1": copy.deepcopy(q_LINK5_1),
-            "J_LINK5_1": jacobian_link5_1,
-            "R_LINK5_2": copy.deepcopy(R_link5_2),
-            "P_LINK5_2": copy.deepcopy(p_link5_2),
-            "q_LINK5_2": copy.deepcopy(q_LINK5_2),
-            "J_LINK5_2": jacobian_link5_2,
-            "R_LINK6": copy.deepcopy(R_link6),
-            "P_LINK6": copy.deepcopy(p_link6),
-            "q_LINK6": copy.deepcopy(q_LINK6),
-            "J_LINK6": jacobian_link6,
-            "R_LINK7": copy.deepcopy(R_link7),
-            "P_LINK7": copy.deepcopy(p_link7),
-            "q_LINK7": copy.deepcopy(q_LINK7),
-            "J_LINK7": jacobian_link7,
-            "R_HAND": copy.deepcopy(R_hand),
-            "P_HAND": copy.deepcopy(p_hand),
-            "q_HAND": copy.deepcopy(q_HAND),
-            "J_HAND": jacobian_hand,
-            "pJ_HAND": pinv_jacobian_hand,
-            "R_EE": copy.deepcopy(self.robot.data.oMf[self.EE_FRAME_ID].rotation),
-            "P_EE": copy.deepcopy(self.robot.data.oMf[self.EE_FRAME_ID].translation),
-        }
+        info["pJ_HAND"] = np.linalg.pinv(info["J_HAND"])
+        info["q"], info["dq"] = q, dq
 
         return info
 
@@ -262,26 +219,20 @@ class BaseController:
         self.robot.centroidalMomentum(q, dq)
 
     def compute_crude_location(self, R_offset, p_offset, frame_id):
-        # get link orientation and position
-        _p = self.robot.data.oMf[frame_id].translation
-        _Rot = self.robot.data.oMf[frame_id].rotation
-
-        # compute link transformation matrix
-        _T = np.hstack((_Rot, _p[:, np.newaxis]))
-        T = np.vstack((_T, np.array([[0.0, 0.0, 0.0, 1.0]])))
+        # get link transformation matrix
+        T = self.robot.data.oMf[frame_id].homogeneous
 
         # compute link offset transformation matrix
-        _TB = np.hstack((R_offset, p_offset))
-        TB = np.vstack((_TB, np.array([[0.0, 0.0, 0.0, 1.0]])))
+        TB = pin.SE3(R_offset, p_offset)
 
         # get transformation matrix
-        T_mat = T @ TB
+        T_mat = pin.SE3(T @ TB)
 
         # compute crude model location
-        p = (T_mat @ np.array([[0.0], [0.0], [0.0], [1.0]]))[:3, 0]
+        p = T_mat.translation
 
         # compute crude model orientation
-        Rot = T_mat[:3, :3]
+        Rot = T_mat.rotation
 
         # quaternion
         q = Rotation.from_matrix(Rot).as_quat()

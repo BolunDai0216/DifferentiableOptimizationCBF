@@ -38,7 +38,6 @@ class ThreeBlocksDiffOptQPController:
         self.FR3_LINK6_FRAME_ID = 14
         self.FR3_LINK7_FRAME_ID = 16
         self.FR3_HAND_FRAME_ID = 20
-        self.EE_FRAME_ID = 26
 
         # set nominal joint angles
         self.q_nominal = np.array(
@@ -72,7 +71,7 @@ class ThreeBlocksDiffOptQPController:
 
         if not self.initialized:
             # get initial rotation and position
-            self.R_start, _p_start = info["R_EE"], info["P_EE"]
+            self.R_start, _p_start = info["R_HAND"], info["P_HAND"]
             self.p_start = _p_start[:, np.newaxis]
 
             # get target rotation and position
@@ -87,10 +86,10 @@ class ThreeBlocksDiffOptQPController:
             self.initialized = True
 
         # get end-effector position
-        p_current = info["P_EE"][:, np.newaxis]
+        p_current = info["P_HAND"][:, np.newaxis]
 
         # get end-effector orientation
-        R_current = info["R_EE"]
+        R_current = info["R_HAND"]
 
         # get Jacobians from info
         pinv_jac = info["pJ_HAND"]
@@ -199,8 +198,10 @@ class ThreeBlocksDiffOptQPController:
             self.FR3_LINK7_FRAME_ID, self.jacobian_frame
         )
         jacobian_hand = self.robot.getFrameJacobian(
-            self.EE_FRAME_ID, self.jacobian_frame
+            self.FR3_HAND_FRAME_ID, self.jacobian_frame
         )
+
+        # breakpoint()
 
         # Get pseudo-inverse of hand Jacobian
         pinv_jacobian_hand = np.linalg.pinv(jacobian_hand)
@@ -266,8 +267,6 @@ class ThreeBlocksDiffOptQPController:
             "q_HAND": copy.deepcopy(q_HAND),
             "J_HAND": jacobian_hand,
             "pJ_HAND": pinv_jacobian_hand,
-            "R_EE": copy.deepcopy(self.robot.data.oMf[self.EE_FRAME_ID].rotation),
-            "P_EE": copy.deepcopy(self.robot.data.oMf[self.EE_FRAME_ID].translation),
         }
 
         return info

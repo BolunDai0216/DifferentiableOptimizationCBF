@@ -14,7 +14,11 @@ class TwoWallsEnv(FR3BaseEnv):
         crude_type="capsule",
     ):
         super().__init__(
-            render_mode=render_mode, record_path=record_path, crude_model=crude_model
+            render_mode=render_mode,
+            record_path=record_path,
+            crude_model=crude_model,
+            dt=dt,
+            crude_type=crude_type,
         )
 
         datapath = getDataPath()

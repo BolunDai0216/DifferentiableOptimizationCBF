@@ -15,7 +15,8 @@ def main():
     )
 
     # define solver
-    controller = ThreeBlocksDiffOptQPController()
+    # controller = ThreeBlocksDiffOptQPController()
+    controller = BaseController()
 
     # reset environment
     info = env.reset(
@@ -73,8 +74,12 @@ if __name__ == "__main__":
 
     from DifferentiableOptimizationCBF.envs.three_blocks_env import ThreeBlocksEnv
 
-    from DifferentiableOptimizationCBF.three_blocks_controller import (
-        ThreeBlocksDiffOptQPController,
+    # from DifferentiableOptimizationCBF.three_blocks_controller import (
+    #     ThreeBlocksDiffOptQPController,
+    # )
+
+    from DifferentiableOptimizationCBF.base_controller import (
+        BaseController,
     )
 
     main()
