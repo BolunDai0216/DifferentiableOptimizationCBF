@@ -110,21 +110,9 @@ class BaseController:
         dp_target = np.zeros((6, 1))
 
         # update link position and oriention in DifferentiableCollisions
-        link_rs = []
-        link_qs = []
+        rs, qs = self.compute_rs_qs(info)
 
-        for idx in ["3", "4", "5_1", "5_2", "6", "7"]:
-            _link_r, _link_q = get_link_config(idx, info)
-            link_rs.append(copy.deepcopy(_link_r))
-            link_qs.append(copy.deepcopy(_link_q))
-
-        # update hand configuration
-        link_rs.append(info["P_HAND"])
-        link_qs.append(change_quat_format(info["q_HAND"]))
-
-        rs = np.concatenate(link_rs)
-        qs = np.concatenate(link_qs)
-
+        # compute α's and J's
         _αs, Js = get_cbf_three_blocks(rs, qs)
 
         # compute α's and J's
@@ -325,3 +313,22 @@ class BaseController:
 
         self.initial_time = copy.deepcopy(t)
         self.initialized = True
+
+    def compute_rs_qs(self, info):
+        # update link position and oriention in DifferentiableCollisions
+        link_rs = []
+        link_qs = []
+
+        for idx in ["3", "4", "5_1", "5_2", "6", "7"]:
+            _link_r, _link_q = get_link_config(idx, info)
+            link_rs.append(copy.deepcopy(_link_r))
+            link_qs.append(copy.deepcopy(_link_q))
+
+        # update hand configuration
+        link_rs.append(info["P_HAND"])
+        link_qs.append(change_quat_format(info["q_HAND"]))
+
+        rs = np.concatenate(link_rs)
+        qs = np.concatenate(link_qs)
+
+        return rs, qs
