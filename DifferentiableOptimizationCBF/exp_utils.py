@@ -27,6 +27,10 @@ def get_Q_mat(q):
 
 
 def get_link_config(link_idx, info):
+    """
+    Get the position and orientation of the link from pybullet
+    and change the rotation format from pybullet to DifferentiableCollisions.jl
+    """
     link_r = info[f"P_LINK{link_idx}"]
     link_R = info[f"R_LINK{link_idx}"] @ np.array([[0, 0, 1], [0, 1, 0], [-1, 0, 0]])
     link_q = Rotation.from_matrix(link_R).as_quat()
