@@ -1,4 +1,3 @@
-import pickle
 import time
 from sys import platform
 
@@ -7,20 +6,18 @@ import numpy as np
 
 def main():
     # create environment
-    env = ThreeBlocksEnv(
+    env = TwoWallsEnv(
         render_mode="human",
         record_path=None,
         crude_model=False,
-        crude_type="ellipsoid",
     )
 
     # define solver
-    # controller = ThreeBlocksDiffOptQPController()
-    controller = ThreeBlocksController()
+    controller = TwoWallsController()
 
     # reset environment
     info = env.reset(
-        cameraDistance=2.0, cameraYaw=-1e-3, cameraPitch=-1e-3, lookat=[0.45, 0.0, 0.55]
+        cameraDistance=2.0, cameraYaw=-1e-3, cameraPitch=-1e-3, lookat=[0.70, 0.0, 0.55]
     )
 
     # initialize clock
@@ -72,9 +69,7 @@ if __name__ == "__main__":
 
         jl = Julia(compiled_modules=False)
 
-    from DifferentiableOptimizationCBF.three_blocks_controller import (
-        ThreeBlocksController,
-    )
-    from DifferentiableOptimizationCBF.envs.three_blocks_env import ThreeBlocksEnv
+    from DifferentiableOptimizationCBF.envs.two_walls_env import TwoWallsEnv
+    from DifferentiableOptimizationCBF.two_walls_controller import TwoWallsController
 
     main()

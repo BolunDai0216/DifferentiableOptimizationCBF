@@ -1,19 +1,16 @@
 import copy
 
 import FR3Env
-from julia import Main
 import numpy as np
 import pinocchio as pin
 from FR3CBFSim.controllers.utils import axis_angle_from_rot_mat, get_R_end_from_start
+from julia import Main
 from pinocchio.robot_wrapper import RobotWrapper
-from scipy.linalg import block_diag
 from scipy.spatial.transform import Rotation
 
-from DifferentiableOptimizationCBF.cbfqp_solver import CBFQPSolver
 from DifferentiableOptimizationCBF.exp_utils import (
     change_quat_format,
     get_link_config,
-    get_Q_mat,
 )
 
 
@@ -95,102 +92,13 @@ class BaseController:
         elif crude_type == "capsule":
             create_arm = Main.include("dc_utils/create_arm_capsule.jl")
 
-        exp_setup = Main.include("dc_utils/three_blocks_exp_setup.jl")
-        self.get_cbf = Main.include("dc_utils/get_cbf_three_blocks.jl")
-
         # setup everything in Julia
         create_arm()
-        exp_setup()
-
-        # define solver
-        self.solver = CBFQPSolver(9, 0, 21)
 
         self.initialized = False
 
-    def controller(self, t, q, dq):
-        self.update_pinocchio(q, dq)
-        info = self.get_info(q, dq)
-
-        if not self.initialized:
-            self.initialize_trajectory(
-                t,
-                info["P_HAND"],
-                info["R_HAND"],
-                np.array([[0.7], [0.05], [0.1]]),
-                (0.0, 0.0, 0.0),
-            )
-
-        # get end-effector position
-        p_current = info["P_HAND"][:, np.newaxis]
-
-        # get end-effector orientation
-        R_current = info["R_HAND"]
-
-        # get Jacobians from info
-        pinv_jac = info["pJ_HAND"]
-        jacobian = info["J_HAND"]
-
-        # compute joint-centering joint acceleration
-        dq_nominal = 0.5 * (self.q_nominal - q[:, np.newaxis])
-
-        # compute error rotation matrix
-        R_err = self.R_end @ R_current.T
-
-        # compute orientation error in axis-angle form
-        rotvec_err = Rotation.from_matrix(R_err).as_rotvec()
-
-        # compute EE position error
-        p_error = np.zeros((6, 1))
-        p_error[:3] = self.p_end - p_current
-        p_error[3:] = rotvec_err[:, np.newaxis]
-
-        # compute EE velocity target
-        dp_target = np.zeros((6, 1))
-
-        # update link position and oriention in DifferentiableCollisions
-        rs, qs = self.compute_rs_qs(info)
-
-        # compute α's and J's
-        _αs, Js = self.get_cbf(rs, qs)
-
-        # compute α's and J's
-        αs = []
-        Cs = []
-
-        for k, link in enumerate(self.frame_names):
-            _Q_mat_link = get_Q_mat(info[f"q_{link}"])
-            Q_mat_link = block_diag(np.eye(3), 0.5 * _Q_mat_link)
-
-            for j in range(3):
-                α, J_link = _αs[j][k], np.array(Js[j][k])
-                αs.append(copy.deepcopy(α))
-                Cs.append(
-                    J_link[-1, 7:][np.newaxis, :] @ Q_mat_link @ info[f"J_{link}"]
-                )
-
-        lb = -5.0 * (np.array(αs)[:, np.newaxis] - 1.03)
-        C = np.concatenate(Cs, axis=0)
-
-        params = {
-            "Jacobian": jacobian,
-            "p_error": p_error,
-            "p_current": p_current,
-            "dp_target": dp_target,
-            "Kp": 0.1 * np.eye(6),
-            "dq_nominal": dq_nominal,
-            "nullspace_proj": np.eye(9) - pinv_jac @ jacobian,
-            "lb": lb,
-            "C": C,
-        }
-
-        # solver for target joint velocity
-        self.solver.solve(params)
-        dq_target = self.solver.qp.results.x
-
-        info["αs"] = _αs
-        info["Js"] = Js
-
-        return dq_target, info
+    def controller(self, *args, **kwargs):
+        raise NotImplementedError("This function is not yet implemented.")
 
     def get_info(self, q, dq):
         info = {}

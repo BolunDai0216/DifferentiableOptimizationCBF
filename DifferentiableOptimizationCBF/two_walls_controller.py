@@ -10,17 +10,17 @@ from DifferentiableOptimizationCBF.cbfqp_solver import CBFQPSolver
 from DifferentiableOptimizationCBF.exp_utils import get_Q_mat
 
 
-class ThreeBlocksController(BaseController):
-    def __init__(self, crude_type="ellipsoid"):
+class TwoWallsController(BaseController):
+    def __init__(self, crude_type="capsule"):
         super().__init__(crude_type=crude_type)
 
-        exp_setup = Main.include("dc_utils/three_blocks_exp_setup.jl")
-        self.get_cbf = Main.include("dc_utils/get_cbf_three_blocks.jl")
+        exp_setup = Main.include("dc_utils/two_wall_exp_setup.jl")
+        self.get_cbf = Main.include("dc_utils/get_cbf_two_walls.jl")
 
         exp_setup()
 
         # define solver
-        self.solver = CBFQPSolver(9, 0, 21)
+        self.solver = CBFQPSolver(9, 0, 28)
 
     def controller(self, t, q, dq):
         self.update_pinocchio(q, dq)
@@ -31,8 +31,8 @@ class ThreeBlocksController(BaseController):
                 t,
                 info["P_HAND"],
                 info["R_HAND"],
-                np.array([[0.7], [0.05], [0.1]]),
-                (0.0, 0.0, 0.0),
+                np.array([[1.2], [0], [0.35]]),
+                (0.0, -90.0, 0.0),
             )
 
         # get end-effector position
@@ -76,7 +76,7 @@ class ThreeBlocksController(BaseController):
             _Q_mat_link = get_Q_mat(info[f"q_{link}"])
             Q_mat_link = block_diag(np.eye(3), 0.5 * _Q_mat_link)
 
-            for j in range(3):
+            for j in range(4):
                 α, J_link = _αs[j][k], np.array(Js[j][k])
                 αs.append(copy.deepcopy(α))
                 Cs.append(
