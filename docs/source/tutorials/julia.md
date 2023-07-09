@@ -53,11 +53,11 @@ b = sa.@SVector [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
 polygon = dc.Polytope(A, b)
 ```
 
-Now that we have the two shapes, we next need to define the position and orientation of the two shapes
+Now that we have the two shapes, we next need to define the position (`r`) and orientation (`q`) of the two shapes
 
 ```julia
-ellipsoid.r = sa.SVector{3}([0.0, 0.0, 0.0])
-ellipsoid.q = sa.SVector{4}([1.0, 0.0, 0.0, 0.0])
+ellipsoid.r = sa.SVector{3}([0.0, 0.0, 0.0])  # [x, y, z]
+ellipsoid.q = sa.SVector{4}([1.0, 0.0, 0.0, 0.0])  # [qw, qx, qy, qz]
 
 polygon.r = sa.SVector{3}([2.0, 2.0, 2.0])
 polygon.q = sa.SVector{4}([1.0, 0.0, 0.0, 0.0])
