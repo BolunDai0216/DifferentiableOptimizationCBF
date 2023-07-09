@@ -62,3 +62,11 @@ This work was partially supported by the NYUAD Center for Artificial Intelligenc
 ## Contact
 
 If you have any questions, please feel free to contact [Bolun Dai](mailto:bd1555@nyu.edu).
+
+```{toctree}
+:caption: 'Tutorials:'
+:hidden:
+:maxdepth: 2
+
+tutorials/index
+```
