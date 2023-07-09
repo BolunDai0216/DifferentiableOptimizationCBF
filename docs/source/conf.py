@@ -36,8 +36,6 @@ extensions = [
     "sphinx_design",
     "sphinx.ext.intersphinx",
     "sphinxcontrib.youtube",
-    "sphinx_toolbox.sidebar_links",
-    "sphinx_toolbox.github",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -67,7 +65,3 @@ myst_enable_extensions = [
     "html_admonition",
     "colon_fence",
 ]
-
-
-github_username = "BolunDai0216"
-github_repository = "DifferentiableOptimizationCBF"
