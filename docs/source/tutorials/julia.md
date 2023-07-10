@@ -85,6 +85,7 @@ $$
 To achieve the same functionality as above in Python, we first create two Julia functions. The first one creates the shapes by defining there geometries and creating global variables that can accessed outside of the function by the Julia runtime.
 
 ```julia
+# create_shapes.jl
 import StaticArrays as sa
 import DifferentiableCollisions as dc
 
@@ -112,6 +113,7 @@ end
 The second function sets the position and orientation of the shapes and computes the minimum uniform scaling factor $\alpha$ and the Jacobian $J$.
 
 ```julia
+# get_α_J.jl
 import StaticArrays as sa
 import DifferentiableCollisions as dc
 
@@ -134,8 +136,8 @@ Assuming the `PyJulia` is installed, we can call Julia code from Python as follo
 ```python
 from julia import Main
 
-create_shapes = Main.include("create_shapes")
-get_α_J = Main.include("get_α_J")
+create_shapes = Main.include("create_shapes.jl")
+get_α_J = Main.include("get_α_J.jl")
 ```
 
 We can then create the shapes 
