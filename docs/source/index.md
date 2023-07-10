@@ -68,5 +68,6 @@ If you have any questions, please feel free to contact [Bolun Dai](mailto:bd1555
 :hidden:
 :maxdepth: 2
 
+install
 tutorials/index
 ```
