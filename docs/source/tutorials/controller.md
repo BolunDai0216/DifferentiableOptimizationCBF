@@ -40,6 +40,8 @@ $$
 \end{align}
 $$
 
+### CBF Constraints
+
 The $\mathrm{lb}$ and $C$ matrices are obtained as
 
 ```python
@@ -60,7 +62,62 @@ lb = -5.0 * (np.array(αs)[:, np.newaxis] - 1.03)
 C = np.concatenate(Cs, axis=0)
 ```
 
-To compute the remaining terms, we define the dictionary
+### Objective Function
+
+To compute the remaining terms in the objective function, we first define 
+
+$$
+\begin{align}
+a &= K_p(p_\mathrm{des} - p) + \dot{p}_\mathrm{des}\\
+\dot{q}_\mathrm{nominal} &= K_p^\prime(\theta_\mathrm{nominal} - \theta).
+\end{align}
+$$
+
+Then, the objective function can be simplified as
+
+$$
+\begin{align*}
+&\ \Big(J(\theta)\dot{\theta}_\mathrm{des} - a\Big)^T\Big(J(\theta)\dot{\theta}_\mathrm{des} - a\Big) + \epsilon\Big(\mathcal{N}(\theta)[\dot{\theta}_\mathrm{des} - \dot{q}_\mathrm{nominal}]\Big)^T\Big(\mathcal{N}(\theta)[\dot{\theta}_\mathrm{des} - \dot{q}_\mathrm{nominal}]\Big)\\
+=&\ \Big(\dot{\theta}_\mathrm{des}^TJ(\theta)^T - a^T\Big)\Big(J(\theta)\dot{\theta}_\mathrm{des} - a\Big) + \epsilon\Big([\dot{\theta}_\mathrm{des} - \dot{q}_\mathrm{nominal}]^T\mathcal{N}(\theta)^T\Big)\Big(\mathcal{N}(\theta)[\dot{\theta}_\mathrm{des} - \dot{q}_\mathrm{nominal}]\Big)
+\end{align*}
+$$
+
+The first part can be expanded as
+
+$$
+\begin{align*}
+&\ \Big(\dot{\theta}_\mathrm{des}^TJ(\theta)^T - a^T\Big)\Big(J(\theta)\dot{\theta}_\mathrm{des} - a\Big)\\
+=&\ \dot{\theta}_\mathrm{des}^TJ(\theta)^TJ(\theta)\dot{\theta}_\mathrm{des} - 2a^TJ(\theta)\dot{\theta}_\mathrm{des} + a^Ta\\
+\equiv &\ \dot{\theta}_\mathrm{des}^TJ(\theta)^TJ(\theta)\dot{\theta}_\mathrm{des} - 2a^TJ(\theta)\dot{\theta}_\mathrm{des} & \text{since } a^Ta \text{ is not dependent on}\ \dot{\theta}_\mathrm{des}.
+\end{align*}
+$$
+
+The second part can be expanded as
+
+$$
+\begin{align*}
+&\ \Big([\dot{\theta}_\mathrm{des} - \dot{q}_\mathrm{nominal}]^T\mathcal{N}(\theta)^T\Big)\Big(\mathcal{N}(\theta)[\dot{\theta}_\mathrm{des} - \dot{q}_\mathrm{nominal}]\Big)\\
+=&\ \Big(\dot{\theta}_\mathrm{des}\mathcal{N}(\theta)^T - \dot{q}_\mathrm{nominal}^T\mathcal{N}(\theta)^T\Big)\Big(\mathcal{N}(\theta)\dot{\theta}_\mathrm{des} - \mathcal{N}(\theta)\dot{q}_\mathrm{nominal}\Big)\\
+\equiv&\ \dot{\theta}_\mathrm{des}\mathcal{N}(\theta)^T\mathcal{N}(\theta)\dot{\theta}_\mathrm{des} - 2\dot{q}_\mathrm{nominal}^T\mathcal{N}(\theta)^T\mathcal{N}(\theta)\dot{\theta}_\mathrm{des}.
+\end{align*}
+$$
+
+Then, the objective function can be written as
+
+$$
+\mathcal{J} = \dot{\theta}_\mathrm{des}^T\Big(J(\theta)^TJ(\theta) + \mathcal{N}(\theta)^T\mathcal{N}(\theta)\Big)\dot{\theta}_\mathrm{des} - 2\Big(a^TJ(\theta) + \dot{q}_\mathrm{nominal}^T\mathcal{N}(\theta)^T\mathcal{N}(\theta)\Big)\dot{\theta}_\mathrm{des}
+$$
+
+Therefore, we have $H$ and $g$ as
+
+$$
+\begin{align*}
+H &= 2\Big(J(\theta)^TJ(\theta) + \mathcal{N}(\theta)^T\mathcal{N}(\theta)\Big)\\
+g &= -2\Big(a^TJ(\theta) + \dot{q}_\mathrm{nominal}^T\mathcal{N}(\theta)^T\mathcal{N}(\theta)\Big)^T
+\end{align*}
+$$
+
+Define the dictionary
 
 ```python
 params = {
@@ -81,7 +138,7 @@ Then, we have $H$ and $g$ as
 ```python
 H = 2 * params["Jacobian"].T @ params["Jacobian"] + 2 * params["nullspace_proj"].T @ params["nullspace_proj"]
 a = params["Kp"] @ params["p_error"] + params["dp_target"]
-g = -2 * (a.T @ params["Jacobian"] + params["dq_nominal"].T @ params["nullspace_proj"].T @ params["nullspace_proj"] )[0, :]
+g = -2 * (a.T @ params["Jacobian"] + params["dq_nominal"].T @ params["nullspace_proj"].T @ params["nullspace_proj"]).T
 ```
 
 Now, we can solve the optimization problem using `proxsuite` and obtain the desired joint velocities.

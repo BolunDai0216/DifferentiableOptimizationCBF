@@ -38,7 +38,7 @@ class CBFQPSolver:
                 + params["dq_nominal"].T
                 @ params["nullspace_proj"].T
                 @ params["nullspace_proj"]
-            )[0, :]
+            ).T
         )
 
         C = params["C"]
