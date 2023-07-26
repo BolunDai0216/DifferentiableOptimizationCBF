@@ -97,8 +97,8 @@ The second part can be expanded as
 $$
 \begin{align*}
 &\ \Big([\dot{\theta}_\mathrm{des} - \dot{q}_\mathrm{nominal}]^T\mathcal{N}(\theta)^T\Big)\Big(\mathcal{N}(\theta)[\dot{\theta}_\mathrm{des} - \dot{q}_\mathrm{nominal}]\Big)\\
-=&\ \Big(\dot{\theta}_\mathrm{des}\mathcal{N}(\theta)^T - \dot{q}_\mathrm{nominal}^T\mathcal{N}(\theta)^T\Big)\Big(\mathcal{N}(\theta)\dot{\theta}_\mathrm{des} - \mathcal{N}(\theta)\dot{q}_\mathrm{nominal}\Big)\\
-\equiv&\ \dot{\theta}_\mathrm{des}\mathcal{N}(\theta)^T\mathcal{N}(\theta)\dot{\theta}_\mathrm{des} - 2\dot{q}_\mathrm{nominal}^T\mathcal{N}(\theta)^T\mathcal{N}(\theta)\dot{\theta}_\mathrm{des}.
+=&\ \Big(\dot{\theta}_\mathrm{des}^T\mathcal{N}(\theta)^T - \dot{q}_\mathrm{nominal}^T\mathcal{N}(\theta)^T\Big)\Big(\mathcal{N}(\theta)\dot{\theta}_\mathrm{des} - \mathcal{N}(\theta)\dot{q}_\mathrm{nominal}\Big)\\
+\equiv&\ \dot{\theta}_\mathrm{des}^T\mathcal{N}(\theta)^T\mathcal{N}(\theta)\dot{\theta}_\mathrm{des} - 2\dot{q}_\mathrm{nominal}^T\mathcal{N}(\theta)^T\mathcal{N}(\theta)\dot{\theta}_\mathrm{des}.
 \end{align*}
 $$
 
