@@ -1,3 +1,87 @@
 # Controller Implementaion
 
-In this tutorial, we show how to implement our differentiable optimization based CBFQP controller to solve the `three-blocks` task.
+In this tutorial, we show how to implement our differentiable optimization based CBFQP controller to solve the `three-blocks` task. The controller class inherits from `DifferentiableOptimizationCBF.base_controller.BaseController`.
+
+## Obtain the CBFs
+
+To get the CBFs, we would need the position and orientation of each bounding shape of the robot links, which is obtained as
+
+```python
+rs, qs = self.compute_rs_qs(info)
+```
+
+where `rs` is an array that contains the positions of the seven bounding shapes and `qs` is an array that contains the orientation (using quaternions) of the seven bounding shapes. 
+
+Then, the scaling factors along with its Jacobians are computed as
+
+```python
+_αs, Js = self.get_cbf(rs, qs)
+```
+
+where `_αs` contains the scaling factors and `Js` contains the Jacobians of the scaling factors.
+
+## Optimization Problem
+
+The optimization problem is defined as
+
+$$
+\begin{align}
+\min_{\dot{\theta}_\mathrm{des}}\ & \Big\|J(\theta)\dot{\theta}_\mathrm{des} - \Big[K_p(p_\mathrm{des} - p) + \dot{p}_\mathrm{des}\Big]\Big\|_2^2 + \epsilon\Big\|\mathcal{N}(\theta)[\dot{\theta}_\mathrm{des} - K_p^\prime(\theta_\mathrm{nominal} - \theta)]\Big\|_2^2\\
+\mathrm{subject\ to}\ & \frac{\partial\mathbf{H}}{\partial x}\dot{\theta}_\mathrm{des} \geq -\gamma\mathbf{H}(x).
+\end{align}
+$$
+
+To solve this using `proxsuite`, we need to transform it into the standard form of
+
+$$
+\begin{align}
+\min_x\ & \frac{1}{2}x^THx + g^Tx\\
+\mathrm{subject\ to}\ & \mathrm{lb} \leq Cx.
+\end{align}
+$$
+
+The $\mathrm{lb}$ and $C$ matrices are obtained as
+
+```python
+# compute α's and J's
+αs = []
+Cs = []
+
+for k, link in enumerate(self.frame_names):
+    _Q_mat_link = get_Q_mat(info[f"q_{link}"])
+    Q_mat_link = block_diag(np.eye(3), 0.5 * _Q_mat_link)
+
+    for j in range(3):
+        α, J_link = _αs[j][k], np.array(Js[j][k])
+        αs.append(copy.deepcopy(α))
+        Cs.append(J_link[-1, 7:][np.newaxis, :] @ Q_mat_link @ info[f"J_{link}"])
+
+lb = -5.0 * (np.array(αs)[:, np.newaxis] - 1.03)
+C = np.concatenate(Cs, axis=0)
+```
+
+To compute the remaining terms, we define the dictionary
+
+```python
+params = {
+    "Jacobian": jacobian,
+    "p_error": p_error,
+    "p_current": p_current,
+    "dp_target": dp_target,
+    "Kp": 0.1 * np.eye(6),
+    "dq_nominal": dq_nominal,
+    "nullspace_proj": np.eye(9) - pinv_jac @ jacobian,
+    "lb": lb,
+    "C": C,
+}
+```
+
+Then, we have $H$ and $g$ as
+
+```python
+H = 2 * params["Jacobian"].T @ params["Jacobian"] + 2 * params["nullspace_proj"].T @ params["nullspace_proj"]
+a = params["Kp"] @ params["p_error"] + params["dp_target"]
+g = -2 * (a.T @ params["Jacobian"] + params["dq_nominal"].T @ params["nullspace_proj"].T @ params["nullspace_proj"] )[0, :]
+```
+
+Now, we can solve the optimization problem using `proxsuite` and obtain the desired joint velocities.
