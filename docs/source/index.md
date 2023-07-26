@@ -45,9 +45,11 @@ To cite our paper, please use the following bibtex
 @article{DaiKKGTK23,
   author       = {Bolun Dai and Rooholla Khorrambakht and Prashanth Krishnamurthy and Vin{\'{\i}}cius Gon{\c{c}}alves and Anthony Tzes and Farshad Khorrami},
   title        = {Safe Navigation and Obstacle Avoidance Using Differentiable Optimization Based Control Barrier Functions},
-  journal      = {CoRR},
-  volume       = {abs/2304.08586},
+  journal      = {{IEEE} Robotics and Automation Letters},
   year         = {2023},
+  volume       = {8},
+  number       = {9},
+  pages        = {5376-5383},
 }
 ```
 
