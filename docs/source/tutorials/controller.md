@@ -42,7 +42,47 @@ $$
 
 ### CBF Constraints
 
-The $\mathrm{lb}$ and $C$ matrices are obtained as
+For each individual CBF constraint, it is in the form of
+
+$$
+\frac{\partial\mathbf{h}}{\partial x}G(x)u = \frac{\partial\mathbf{h}}{\partial\mu}\frac{\partial\mu}{\partial x}G(x)u \geq -\gamma\mathbf{h}(x).
+$$
+
+The above inequality is equivalent to
+
+$$
+\frac{\partial\alpha}{\partial\mu}\begin{bmatrix}
+        J_v(x)\\
+        \displaystyle\frac{1}{2}\mathbf{Q}J_\omega(x)
+\end{bmatrix}G(x)u = \frac{\partial\alpha}{\partial\mu}\begin{bmatrix}
+    \mathbf{I} & \mathbf{0}\\
+    \mathbf{0} & \displaystyle\frac{1}{2}\mathbf{Q}
+\end{bmatrix}\begin{bmatrix}
+    J_v(x)\\
+    J_\omega(x)
+\end{bmatrix} \geq -\gamma(\alpha - \beta).
+$$
+
+If we let
+
+$$
+\begin{align}
+    \texttt{α} &\leftarrow \alpha\\
+    \texttt{J_link[7:]} &\leftarrow \frac{\partial\alpha}{\partial\mu}\\
+    \texttt{Q_mat_link} &\leftarrow \begin{bmatrix}
+        \mathbf{I} & \mathbf{0}\\
+        \mathbf{0} & \displaystyle\frac{1}{2}\mathbf{Q}
+    \end{bmatrix}\\
+    \texttt{info[f"J_{link}"]} &\leftarrow \begin{bmatrix}
+        J_v(x)\\
+        J_\omega(x)
+    \end{bmatrix}\\
+    \gamma &\leftarrow 5.0\\
+    \beta &\leftarrow 1.03
+\end{align}
+$$
+
+then, we can stack all of the CBFs and obtain the $\mathrm{lb}$ and $C$ matrices as follows
 
 ```python
 # compute α's and J's
