@@ -57,7 +57,7 @@ To cite our paper, please use the following bibtex
 
 ## Acknowledgements
 
-This work was partially supported by the NYUAD Center for Artificial Intelligence and Robotics (CAIR), funded by Tamkeen under the NYUAD Research Institute Award CG010.
+This work was partially supported by the NYUAD Center for Artificial Intelligence and Robotics (CAIR), funded by Tamkeen under the NYUAD Research Institute Award CG010. We would like to thank Avadesh Meduri for his help in setting up the robot communication pipeline. We would also like to thank the contributors to the open-source software that we utilize for the simulations and robotic experiments.
 
 ---
 
