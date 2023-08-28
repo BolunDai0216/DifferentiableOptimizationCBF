@@ -55,3 +55,18 @@ Then, we can install `PyCall` in Julia, using
 import julia
 julia.install()
 ```
+
+## Install DifferentiableOptimizationCBF
+
+First, clone the package 
+
+```bash
+git clone https://github.com/BolunDai0216/DifferentiableOptimizationCBF.git
+```
+
+then install it using
+
+```bash
+cd DifferentiableOptimizationCBF
+python3 -m pip install -e .
+```
