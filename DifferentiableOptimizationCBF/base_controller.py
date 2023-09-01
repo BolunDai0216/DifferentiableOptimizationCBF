@@ -3,7 +3,6 @@ import copy
 import FR3Env
 import numpy as np
 import pinocchio as pin
-from FR3CBFSim.controllers.utils import axis_angle_from_rot_mat, get_R_end_from_start
 from julia import Main
 from pinocchio.robot_wrapper import RobotWrapper
 from scipy.spatial.transform import Rotation
@@ -11,6 +10,8 @@ from scipy.spatial.transform import Rotation
 from DifferentiableOptimizationCBF.exp_utils import (
     change_quat_format,
     get_link_config,
+    axis_angle_from_rot_mat,
+    get_R_end_from_start,
 )
 
 

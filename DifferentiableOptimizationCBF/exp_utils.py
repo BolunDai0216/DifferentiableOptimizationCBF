@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.linalg as LA
 from scipy.spatial.transform import Rotation
 
 
@@ -36,3 +37,25 @@ def get_link_config(link_idx, info):
     link_q = Rotation.from_matrix(link_R).as_quat()
 
     return link_r, link_q
+
+
+def axis_angle_from_rot_mat(rot_mat):
+    rotation = Rotation.from_matrix(rot_mat)
+    axis_angle = rotation.as_rotvec()
+    angle = LA.norm(axis_angle)
+    axis = axis_angle / angle
+
+    return axis, angle
+
+
+def get_R_end_from_start(x_ang, y_ang, z_ang, R_start):
+    """Get target orientation based on initial orientation"""
+    _R_end = (
+        Rotation.from_euler("x", x_ang, degrees=True).as_matrix()
+        @ Rotation.from_euler("y", y_ang, degrees=True).as_matrix()
+        @ Rotation.from_euler("z", z_ang, degrees=True).as_matrix()
+        @ R_start
+    )
+    R_end = Rotation.from_matrix(_R_end).as_matrix()
+
+    return R_end
