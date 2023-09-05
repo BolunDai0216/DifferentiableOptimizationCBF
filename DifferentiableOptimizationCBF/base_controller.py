@@ -182,7 +182,7 @@ class BaseController:
         for idx in ["3", "4", "5_1", "5_2", "6", "7"]:
             _link_r, _link_q = get_link_config(idx, info)
             link_rs.append(copy.deepcopy(_link_r))
-            link_qs.append(copy.deepcopy(_link_q))
+            link_qs.append(change_quat_format(copy.deepcopy(_link_q)))
 
         # update hand configuration
         link_rs.append(info["P_HAND"])
