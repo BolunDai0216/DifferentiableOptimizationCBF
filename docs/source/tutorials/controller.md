@@ -60,7 +60,7 @@ $$
 \end{bmatrix}\begin{bmatrix}
     J_v(x)\\
     J_\omega(x)
-\end{bmatrix} \geq -\gamma(\alpha - \beta).
+\end{bmatrix}u \geq -\gamma(\alpha - \beta).
 $$
 
 If we let
