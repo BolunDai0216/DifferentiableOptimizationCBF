@@ -9,14 +9,12 @@ class ThreeBlocksEnv(FR3BaseEnv):
         self,
         render_mode="human",
         record_path=None,
-        crude_model=False,
         dt=1 / 1000,
         crude_type="capsule",
     ):
         super().__init__(
             render_mode=render_mode,
             record_path=record_path,
-            crude_model=crude_model,
             dt=dt,
             crude_type=crude_type,
         )

@@ -1,21 +1,18 @@
 import FR3Env
 import pybullet as p
 from DifferentiableOptimizationCBF import getDataPath
-from FR3Env.fr3_crude_env import FR3CrudeSim
+from FR3Env.fr3_bounding_box_env import FR3BoundingBoxSim
 
 
-class FR3BaseEnv(FR3CrudeSim):
+class FR3BaseEnv(FR3BoundingBoxSim):
     def __init__(
         self,
         render_mode="human",
         record_path=None,
-        crude_model=False,
         dt=1 / 1000,
         crude_type="capsule",
     ):
-        super().__init__(
-            render_mode=render_mode, record_path=record_path, crude_model=crude_model
-        )
+        super().__init__(render_mode=render_mode, record_path=record_path)
 
         # set time step
         self.dt = dt

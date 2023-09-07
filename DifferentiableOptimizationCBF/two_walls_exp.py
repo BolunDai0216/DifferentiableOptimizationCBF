@@ -9,7 +9,6 @@ def main():
     env = TwoWallsEnv(
         render_mode="human",
         record_path=None,
-        crude_model=False,
     )
 
     # define solver

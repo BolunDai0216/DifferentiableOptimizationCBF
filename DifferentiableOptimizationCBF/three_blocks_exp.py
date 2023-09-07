@@ -10,7 +10,6 @@ def main():
     env = ThreeBlocksEnv(
         render_mode="human",
         record_path=None,
-        crude_model=False,
         crude_type="ellipsoid",
     )
 
