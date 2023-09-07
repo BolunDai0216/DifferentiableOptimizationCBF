@@ -19,7 +19,7 @@ class BaseController:
     def __init__(self, crude_type="ellipsoid"):
         # load URDF file
         self.fr3env_dir = FR3Env.getDataPath()
-        self.fr3_urdf = self.fr3env_dir + "/robots/fr3_crude.urdf"
+        self.fr3_urdf = self.fr3env_dir + "/robots/fr3_with_bounding_boxes.urdf"
 
         # build pin_robot
         self.robot = RobotWrapper.BuildFromURDF(self.fr3_urdf, self.fr3env_dir)
@@ -28,19 +28,20 @@ class BaseController:
         self.jacobian_frame = pin.ReferenceFrame.LOCAL_WORLD_ALIGNED
 
         # get fr3 frame ids
-        self.FR3_LINK3_FRAME_ID = 8
-        self.FR3_LINK4_FRAME_ID = 10
-        self.FR3_LINK5_FRAME_ID = 12
-        self.FR3_LINK6_FRAME_ID = 14
-        self.FR3_LINK7_FRAME_ID = 16
-        self.FR3_HAND_FRAME_ID = 20
+        self.FR3_LINK3_FRAME_ID = self.robot.model.getFrameId("fr3_link3_bounding_box")
+        self.FR3_LINK4_FRAME_ID = self.robot.model.getFrameId("fr3_link4_bounding_box")
+        self.FR3_LINK5_1_FRAME_ID = self.robot.model.getFrameId("fr3_link5_1_bounding_box")
+        self.FR3_LINK5_2_FRAME_ID = self.robot.model.getFrameId("fr3_link5_2_bounding_box")
+        self.FR3_LINK6_FRAME_ID = self.robot.model.getFrameId("fr3_link6_bounding_box")
+        self.FR3_LINK7_FRAME_ID = self.robot.model.getFrameId("fr3_link7_bounding_box")
+        self.FR3_HAND_FRAME_ID = self.robot.model.getFrameId("fr3_hand_bounding_box")
 
         # save the frame ids in a list
         self.frame_ids = [
             self.FR3_LINK3_FRAME_ID,
             self.FR3_LINK4_FRAME_ID,
-            self.FR3_LINK5_FRAME_ID,
-            self.FR3_LINK5_FRAME_ID,
+            self.FR3_LINK5_1_FRAME_ID,
+            self.FR3_LINK5_2_FRAME_ID,
             self.FR3_LINK6_FRAME_ID,
             self.FR3_LINK7_FRAME_ID,
             self.FR3_HAND_FRAME_ID,
@@ -63,13 +64,13 @@ class BaseController:
 
         # get the bounding primitive position offsets
         self.P_offset = {
-            "LINK3": np.array([[0.0], [0.0], [-0.145]]),
-            "LINK4": np.array([[0.0], [0.0], [0.0]]),
-            "LINK5_1": np.array([[0.0], [0.0], [-0.26]]),
-            "LINK5_2": np.array([[0.0], [0.08], [-0.13]]),
-            "LINK6": np.array([[0.0], [0.0], [-0.03]]),
-            "LINK7": np.array([[0.0], [0.0], [0.01]]),
-            "HAND": np.array([[0.0], [0.0], [0.06]]),
+            "LINK3": np.zeros((3, 1)),
+            "LINK4": np.zeros((3, 1)),
+            "LINK5_1": np.zeros((3, 1)),
+            "LINK5_2": np.zeros((3, 1)),
+            "LINK6": np.zeros((3, 1)),
+            "LINK7": np.zeros((3, 1)),
+            "HAND": np.zeros((3, 1))
         }
 
         # set nominal joint angles

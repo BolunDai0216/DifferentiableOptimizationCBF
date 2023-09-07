@@ -14,8 +14,10 @@ def main():
     )
 
     # define solver
-    # controller = ThreeBlocksDiffOptQPController()
-    controller = ThreeBlocksController()
+    try:
+        controller = ThreeBlocksController()
+    except:
+        controller = ThreeBlocksController()
 
     # reset environment
     info = env.reset(

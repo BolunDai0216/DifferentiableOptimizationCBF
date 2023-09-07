@@ -12,7 +12,10 @@ def main():
     )
 
     # define solver
-    controller = TwoWallsController()
+    try:
+        controller = TwoWallsController()
+    except:
+        controller = TwoWallsController()
 
     # reset environment
     info = env.reset(
