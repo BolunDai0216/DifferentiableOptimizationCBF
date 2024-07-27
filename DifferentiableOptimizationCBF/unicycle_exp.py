@@ -1,11 +1,13 @@
+import argparse
 import copy
-import pickle
 import time
 from sys import platform
 
 import numpy as np
 import proxsuite
-from DiffOptCBF.envs.unicycle_env import UnicycleEnv
+
+from DifferentiableOptimizationCBF.envs.unicycle_env import UnicycleEnv
+from DifferentiableOptimizationCBF.unicycle_plot_utils import plot_unicycle
 
 
 def get_Q_mat(q):
@@ -22,6 +24,10 @@ def get_Q_mat(q):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--show_plot", action="store_true")
+    args = parser.parse_args()
+
     env = UnicycleEnv()
     env.reset(set_init_state=[-1.0, -3.0, np.pi / 4])
     unicycle_env_setup()
@@ -96,11 +102,10 @@ def main():
         # store data
         history.append(copy.deepcopy(env.state))
 
-    # save data to pickle file
-    with open("data/data_unicycle_env.pkl", "wb") as f:
-        pickle.dump(history, f)
-
     print("Average computation time: ", np.mean(np.array(comp_times)))
+
+    if args.show_plot:
+        plot_unicycle(history)
 
 
 if __name__ == "__main__":
