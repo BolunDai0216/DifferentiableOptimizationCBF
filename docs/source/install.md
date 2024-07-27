@@ -128,4 +128,4 @@ One way to reduce the Julia startup time is to use system images. We provide an 
 cd /path/to/dc_utils && julia unicycle_sysimage.jl
 ```
 
-To use the system image see the example in `[unicycle_exp_sysimage.py](https://github.com/BolunDai0216/DifferentiableOptimizationCBF/blob/main/DifferentiableOptimizationCBF/unicycle_exp_sysimage.py)`.
+To use the system image see the example in [`unicycle_exp_sysimage.py`](https://github.com/BolunDai0216/DifferentiableOptimizationCBF/blob/main/DifferentiableOptimizationCBF/unicycle_exp_sysimage.py).
