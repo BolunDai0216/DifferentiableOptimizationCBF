@@ -1,8 +1,18 @@
 # Installation
 
-This part of the tutorial provides steps required to run the provided code and tutorials.
+This part of the tutorial provides steps required to run the provided code and tutorials. The following steps are only tested on Ubuntu and MacOS.
 
-## Install non-statically linked Python (Recommended, but optional)
+## Dev Container (Recommended, but only for Linux Machines)
+
+To use the dev container, first install docker and the VS Code devcontainer extension: `ms-vscode-remote.remote-containers`. Then, go to the `provisioning` folder and run `bash setup.sh`, which will setup the `.zsh_history` file for the devcontainer which will make the zsh command history persistent over docker builds.
+
+After these steps, open a VS Code window in the `DifferentiableOptimizationCBF` directory and press `Shift + Ctrl + P` in VS Code, which will open up the command palette, in the command palette type/search for `Dev Containers: Rebuild and Reopen in Container`. This will start the process of building the devcontainer.
+
+## Local Installation
+
+Below are the steps to install the required dependencies for the code to run locally.
+
+### Install non-statically linked Python (Optional, not tested on Mac OS)
 
 First, we need to install a Python interpreter that is **not** statically linked to libpython. To do this we use `pyenv`. First, install the dependencies (or follow the instructions [here](https://realpython.com/intro-to-pyenv/#build-dependencies)):
 
@@ -41,7 +51,7 @@ pyenv global 3.9.16
 exec "$SHELL"
 ```
 
-## Install Julia and Julia dependencies
+### Install Julia and Julia dependencies
 
 We can download the Julia binaries using the commands
 
@@ -65,7 +75,7 @@ add StaticArrays
 
 in the package manager.
 
-## Install Python dependencies
+### Install Python dependencies
 
 We can then install the dependencies of `DiffOptCBF`. First, install pinochhio and proxsuite using
 
@@ -95,7 +105,7 @@ import julia
 julia.install()
 ```
 
-## Install DifferentiableOptimizationCBF
+### Install DifferentiableOptimizationCBF
 
 First, clone the package 
 
@@ -109,3 +119,13 @@ then install it using
 cd DifferentiableOptimizationCBF
 python3 -m pip install -e .
 ```
+
+## Using Julia System Images
+
+One way to reduce the Julia startup time is to use system images. We provide an example of doing so for the unicycle experiments. To compile the system image, run the following command
+
+```bash
+cd /path/to/dc_utils && julia unicycle_sysimage.jl
+```
+
+To use the system image see the example in `unicycle_exp_sysimage.py`.
