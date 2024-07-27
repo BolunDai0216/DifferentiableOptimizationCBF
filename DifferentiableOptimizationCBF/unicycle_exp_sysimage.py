@@ -1,7 +1,6 @@
 import argparse
 import copy
 import time
-from sys import platform
 
 import numpy as np
 import proxsuite
