@@ -8,9 +8,9 @@ from pinocchio.robot_wrapper import RobotWrapper
 from scipy.spatial.transform import Rotation
 
 from DifferentiableOptimizationCBF.exp_utils import (
+    axis_angle_from_rot_mat,
     change_quat_format,
     get_link_config,
-    axis_angle_from_rot_mat,
     get_R_end_from_start,
 )
 
@@ -30,8 +30,12 @@ class BaseController:
         # get fr3 frame ids
         self.FR3_LINK3_FRAME_ID = self.robot.model.getFrameId("fr3_link3_bounding_box")
         self.FR3_LINK4_FRAME_ID = self.robot.model.getFrameId("fr3_link4_bounding_box")
-        self.FR3_LINK5_1_FRAME_ID = self.robot.model.getFrameId("fr3_link5_1_bounding_box")
-        self.FR3_LINK5_2_FRAME_ID = self.robot.model.getFrameId("fr3_link5_2_bounding_box")
+        self.FR3_LINK5_1_FRAME_ID = self.robot.model.getFrameId(
+            "fr3_link5_1_bounding_box"
+        )
+        self.FR3_LINK5_2_FRAME_ID = self.robot.model.getFrameId(
+            "fr3_link5_2_bounding_box"
+        )
         self.FR3_LINK6_FRAME_ID = self.robot.model.getFrameId("fr3_link6_bounding_box")
         self.FR3_LINK7_FRAME_ID = self.robot.model.getFrameId("fr3_link7_bounding_box")
         self.FR3_HAND_FRAME_ID = self.robot.model.getFrameId("fr3_hand_bounding_box")
@@ -70,7 +74,7 @@ class BaseController:
             "LINK5_2": np.zeros((3, 1)),
             "LINK6": np.zeros((3, 1)),
             "LINK7": np.zeros((3, 1)),
-            "HAND": np.zeros((3, 1))
+            "HAND": np.zeros((3, 1)),
         }
 
         # set nominal joint angles

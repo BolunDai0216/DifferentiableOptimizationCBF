@@ -73,9 +73,9 @@ if __name__ == "__main__":
 
         jl = Julia(compiled_modules=False)
 
+    from DifferentiableOptimizationCBF.envs.three_blocks_env import ThreeBlocksEnv
     from DifferentiableOptimizationCBF.three_blocks_controller import (
         ThreeBlocksController,
     )
-    from DifferentiableOptimizationCBF.envs.three_blocks_env import ThreeBlocksEnv
 
     main()

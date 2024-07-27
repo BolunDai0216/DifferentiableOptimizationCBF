@@ -1,7 +1,8 @@
 import FR3Env
 import pybullet as p
-from DifferentiableOptimizationCBF import getDataPath
 from FR3Env.fr3_bounding_box_env import FR3BoundingBoxSim
+
+from DifferentiableOptimizationCBF import getDataPath
 
 
 class FR3BaseEnv(FR3BoundingBoxSim):
