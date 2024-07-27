@@ -1,0 +1,47 @@
+{
+    "name": "diffoptcbf-devcontainer",
+    "build": {
+        "context": "..",
+        "dockerfile": "../docker/Dockerfile"
+    },
+    "containerEnv": {
+        "DISPLAY": "unix:0",
+        "SHELL": "/bin/zsh"
+    },
+    "runArgs": [
+        "--privileged",
+        "--gpus",
+        "all",
+        "-v",
+        "/dev:/dev",
+        "--net=host",
+        "-e",
+        "DISPLAY=${env:DISPLAY}",
+        "--ulimit=core=-1"
+    ],
+    "mounts": [
+        "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+        "source=/dev/dri,target=/dev/dri,type=bind,consistency=cached",
+        "source=${localEnv:HOME}/diffoptcbf-devcontainer/.zsh_history,target=/home/dev/.zsh_history,type=bind,consistency=cached"
+    ],
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace/diffoptcbf-devcontainer,type=bind",
+    "workspaceFolder": "/workspace/diffoptcbf-devcontainer",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "extensions.verifySignature": false
+            },
+            "extensions": [
+                "ms-azuretools.vscode-docker",
+                "ms-python.black-formatter",
+                "ms-python.flake8",
+                "ms-python.isort",
+                "ms-python.pylint",
+                "ms-python.python",
+                "ms-toolsai.jupyter",
+                "xaver.clang-format",
+                "julialang.language-julia"
+            ]
+        }
+    }
+}
