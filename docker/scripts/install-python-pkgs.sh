@@ -11,8 +11,4 @@ pip3 install \
     ipykernel \
     isort \
     julia \
-    matplotlib \
-    pin \
-    proxsuite \
-    pybullet \
-    scipy
+    matplotlib
