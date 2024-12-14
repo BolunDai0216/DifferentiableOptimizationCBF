@@ -20,6 +20,11 @@ python3 two_walls_exp.py
 
 Note that because of the JIT compilation of Julia, it takes a while to start the simulation.
 
+## FAQ
+
+- If you see the following error message `Your Python interpreter /usr/bin/python3 is statically linked to libpython. Currently, PyJulia does not fully support such Python interpreter.` Try changing `python3` to `python-jl`.
+- If you see `Cannot connect to X server`, on the host machine try running `xhost +`.
+
 ```{toctree}
 :hidden:
 

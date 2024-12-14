@@ -10,8 +10,6 @@
     },
     "runArgs": [
         "--privileged",
-        "--gpus",
-        "all",
         "-v",
         "/dev:/dev",
         "--net=host",

@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.1.1-devel-ubuntu22.04
+FROM ubuntu:22.04
 
 SHELL ["/bin/bash", "-c"]
 
@@ -27,10 +27,6 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 
 RUN --mount=type=bind,source=docker/config/docker.zshrc,target=/tmp/docker.zshrc \
     cat /tmp/docker.zshrc >> $HOME/.zshrc
-
-# NVIDIA-related environment variables
-ENV NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES:-all}
-ENV NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
 
 # Set Julia package directory
 ENV JULIA_DEPOT_PATH="/opt/julia:$JULIA_DEPOT_PATH"
