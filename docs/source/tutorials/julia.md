@@ -72,12 +72,7 @@ Then, we can get the minimum uniform scaling factor $\alpha$ by calling
 where `α` gives the minimum scaling factor and `J` represents
 
 $$
-    J = \begin{bmatrix}
-        \displaystyle\frac{\partial\alpha}{\partial r_\mathrm{e}} & 
-        \displaystyle\frac{\partial\alpha}{\partial q_\mathrm{e}} & 
-        \displaystyle\frac{\partial\alpha}{\partial r_\mathrm{p}} & 
-        \displaystyle\frac{\partial\alpha}{\partial q_\mathrm{p}}
-    \end{bmatrix} \in \mathbb{R}^{14}.
+    J = \displaystyle\frac{\partial(x, \alpha)}{\partial (r_\mathrm{e}, q_\mathrm{e}, r_\mathrm{p}, q_\mathrm{p})} \in \mathbb{R}^{4\times14}.
 $$
 
 ## Python
