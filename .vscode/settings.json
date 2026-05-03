@@ -8,5 +8,8 @@
         }
     },
     "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/src"
+    ],
     "ruff.nativeServer": "on"
 }

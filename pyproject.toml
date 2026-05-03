@@ -28,6 +28,12 @@ dependencies = [
 Homepage = "https://github.com/BolunDai0216/DifferentiableOptimizationCBF"
 Documentation = "https://differentiableoptimizationcbf.readthedocs.io/"
 
+[project.scripts]
+diffoptcbf-three-blocks = "DifferentiableOptimizationCBF.three_blocks_exp:main"
+diffoptcbf-two-walls = "DifferentiableOptimizationCBF.two_walls_exp:main"
+diffoptcbf-unicycle = "DifferentiableOptimizationCBF.unicycle_exp:main"
+diffoptcbf-unicycle-sysimage = "DifferentiableOptimizationCBF.unicycle_exp_sysimage:main"
+
 [project.optional-dependencies]
 docs = [
   "sphinx>=7",
@@ -61,7 +67,7 @@ override-dependencies = ["pybullet ; sys_platform == 'linux'"]
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
-packages = ["DifferentiableOptimizationCBF"]
+packages = ["src/DifferentiableOptimizationCBF"]
 
 [tool.ruff]
 line-length = 100

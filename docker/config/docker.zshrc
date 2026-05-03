@@ -1,1 +1,1 @@
-export PYTHONPATH=$PYTHONPATH:/workspace/diffoptcbf-devcontainer
+export PYTHONPATH=$PYTHONPATH:/workspace/diffoptcbf-devcontainer/src

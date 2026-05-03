@@ -20,6 +20,15 @@ from DifferentiableOptimizationCBF.envs.unicycle_env import UnicycleEnv  # noqa:
 from DifferentiableOptimizationCBF.unicycle_plot_utils import plot_unicycle  # noqa: E402
 
 
+def load_julia_functions():
+    from juliacall import Main as jl
+
+    return (
+        jl.include(str(DC_UTILS_DIR / "unicycle_env_setup.jl")),
+        jl.include(str(DC_UTILS_DIR / "get_cbf_unicycle_env.jl")),
+    )
+
+
 def get_Q_mat(q):
     return np.array(
         [
@@ -37,6 +46,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--show_plot", action="store_true")
     args = parser.parse_args()
+
+    unicycle_env_setup, get_cbf_unicycle_env = load_julia_functions()
 
     env = UnicycleEnv()
     env.reset(set_init_state=[-1.0, -3.0, np.pi / 4])
@@ -119,9 +130,4 @@ def main():
 
 
 if __name__ == "__main__":
-    from juliacall import Main as jl
-
-    unicycle_env_setup = jl.include(str(DC_UTILS_DIR / "unicycle_env_setup.jl"))
-    get_cbf_unicycle_env = jl.include(str(DC_UTILS_DIR / "get_cbf_unicycle_env.jl"))
-
     main()

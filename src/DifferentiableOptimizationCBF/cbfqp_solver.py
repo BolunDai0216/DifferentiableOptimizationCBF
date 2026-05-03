@@ -1,6 +1,4 @@
-import numpy as np
 import proxsuite
-from scipy.linalg import block_diag
 
 
 class CBFQPSolver:

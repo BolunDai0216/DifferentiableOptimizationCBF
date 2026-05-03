@@ -126,13 +126,13 @@ function get_α_J(rs::Vector{Float64}, qs::Vector{Float64})
 end
 ```
 
-Assuming the `PyJulia` is installed, we can call Julia code from Python as follows. First, we import the relevant packages then load the two Julia functions above.
+Assuming the project environment is installed, we can call Julia code from Python through `juliacall`. First, we import the relevant packages then load the two Julia functions above.
 
 ```python
-from julia import Main
+from juliacall import Main as jl
 
-create_shapes = Main.include("create_shapes.jl")
-get_α_J = Main.include("get_α_J.jl")
+create_shapes = jl.include("create_shapes.jl")
+get_α_J = jl.include("get_α_J.jl")
 ```
 
 We can then create the shapes 

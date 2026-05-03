@@ -112,7 +112,7 @@ class BaseController:
     def get_info(self, q, dq):
         info = {}
 
-        for idx, name in zip(self.frame_ids, self.frame_names):
+        for idx, name in zip(self.frame_ids, self.frame_names, strict=True):
             info[f"J_{name}"] = self.robot.getFrameJacobian(idx, self.jacobian_frame)
 
             # compute the position and rotation of the crude models
