@@ -52,7 +52,13 @@ def main():
             history.append(_info)
 
         # compute torque command
-        τ = 6.0 * (dq_target[:, np.newaxis] - dq[:, np.newaxis]) + G - 0.1 * dq[:, np.newaxis]
+        q_target = dq_target[:, np.newaxis] * env.dt + q[:, np.newaxis]
+        τ = (
+            30 * (q_target - q[:, np.newaxis])
+            + 3.0 * (dq_target[:, np.newaxis] - dq[:, np.newaxis])
+            + G
+            - 0.1 * dq[:, np.newaxis]
+        )
         torques.append(τ)
 
         if i >= 1:
