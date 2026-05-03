@@ -1,12 +1,12 @@
 default:
     @just --list
 
-# Install pinned toolchain (python, julia, uv, just) via mise.
+# Install pinned toolchain via mise (run before `just install`).
 install-tools:
     mise install
 
-# Sync Python deps and trigger first-time Julia env resolution.
-install: install-tools
+# Install Python + Julia deps (run `mise install` or `just install-tools` first).
+install:
     uv sync
     uv run python -c "import juliacall"
 

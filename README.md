@@ -7,19 +7,26 @@ This repo contains the codebase of [**Safe Navigation and Obstacle Avoidance Usi
 
 ## Quickstart
 
-This project uses [`mise`](https://mise.jdx.dev/) to pin Python, Julia, [`uv`](https://docs.astral.sh/uv/), and [`just`](https://just.systems/) to known-good versions. After cloning:
+This project uses [`mise`](https://mise.jdx.dev/) to pin Python, Julia, [`uv`](https://docs.astral.sh/uv/), and [`just`](https://just.systems/) to known-good versions. `mise` is the only thing you need to install yourself — everything else (including `just`) gets installed by `mise install`.
 
 ```bash
 # 1. Install mise (one-time, see https://mise.jdx.dev/getting-started.html for alternatives)
 curl https://mise.run | sh
 
-# 2. Trust the project's mise.toml and install the toolchain
+# 2. Clone and enter the repo
+git clone https://github.com/BolunDai0216/DifferentiableOptimizationCBF.git
 cd DifferentiableOptimizationCBF
+
+# 3. Trust the project's mise.toml and install the pinned toolchain
+#    (Python 3.11, Julia 1.10, uv, just).
 mise trust
+mise install
+
+# 4. Install Python + Julia project dependencies via just.
 just install
 ```
 
-`just install` runs `mise install` (Python 3.11, Julia 1.10, uv, just), then `uv sync` to set up the Python venv at `.venv/`, and triggers `juliacall` to resolve the Julia environment under `.venv/julia_env/` from `juliapkg.json`.
+`mise install` reads `mise.toml` and installs the pinned versions of Python, Julia, `uv`, and `just`. `just install` then runs `uv sync` to set up the Python venv at `.venv/` and triggers `juliacall` to resolve the Julia environment under `.venv/julia_env/` from `juliapkg.json`.
 
 ## Running experiments
 
@@ -36,8 +43,8 @@ To list every available recipe: `just` (or `just --list`).
 
 | Recipe                          | What it does                                                   |
 | ------------------------------- | -------------------------------------------------------------- |
-| `just install-tools`            | Install pinned python/julia/uv/just via mise                   |
-| `just install`                  | Above, then `uv sync` and Julia env resolution                 |
+| `just install-tools`            | Install pinned python/julia/uv/just via mise (alias for `mise install`) |
+| `just install`                  | `uv sync` + first-time Julia env resolution                    |
 | `just run-unicycle [ARGS]`      | Run the unicycle experiment                                    |
 | `just run-two-walls`            | Run the two-walls FR3 experiment                               |
 | `just run-three-blocks`         | Run the three-blocks FR3 experiment                            |

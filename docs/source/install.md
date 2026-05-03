@@ -6,22 +6,26 @@ The project uses [`mise`](https://mise.jdx.dev/) to pin the toolchain (Python 3.
 
 ## Quickstart
 
-Install `mise` (one-time, see the [mise install docs](https://mise.jdx.dev/getting-started.html) for alternatives such as Homebrew or apt):
+`mise` is the only tool you need to install yourself — it then provisions Python, Julia, `uv`, and `just` for you. See the [mise install docs](https://mise.jdx.dev/getting-started.html) for alternatives such as Homebrew or apt.
 
 ```bash
+# 1. Install mise (one-time)
 curl https://mise.run | sh
-```
 
-Clone the repository and install the toolchain plus all project dependencies:
-
-```bash
+# 2. Clone and enter the repo
 git clone https://github.com/BolunDai0216/DifferentiableOptimizationCBF.git
 cd DifferentiableOptimizationCBF
+
+# 3. Trust the project's mise.toml and install the pinned toolchain
+#    (Python 3.11, Julia 1.10, uv, just).
 mise trust
+mise install
+
+# 4. Install Python + Julia project dependencies via just.
 just install
 ```
 
-`just install` runs `mise install` to fetch the pinned Python, Julia, `uv`, and `just` versions, then `uv sync` to populate the Python virtual environment under `.venv/`, and finally triggers `juliacall` so it resolves and installs the Julia packages declared in `juliapkg.json` into `.venv/julia_env/`.
+`mise install` reads `mise.toml` and installs the pinned versions of Python, Julia, `uv`, and `just`. `just install` then runs `uv sync` to populate the Python virtual environment under `.venv/` and triggers `juliacall` so it resolves and installs the Julia packages declared in `juliapkg.json` into `.venv/julia_env/`.
 
 To include documentation dependencies as well, run:
 
