@@ -1,0 +1,13 @@
+{
+    "julia": "~1.10",
+    "packages": {
+        "DifferentiableCollisions": {
+            "uuid": "64b45163-ce2a-43f6-8f64-55d720633796",
+            "version": "0.1"
+        },
+        "StaticArrays": {
+            "uuid": "90137ffa-7385-5640-81b9-e52037218182",
+            "version": "1"
+        }
+    }
+}

@@ -1,17 +1,15 @@
-import numpy as np
 import proxsuite
-from scipy.linalg import block_diag
 
 
 class CBFQPSolver:
-    def __init__(self, n, n_eq, n_ieq):
+    def __init__(self, n: int, n_eq: int, n_ieq: int) -> None:
         self.n = n
         self.n_eq = n_eq
         self.n_ieq = n_ieq
         self.qp = proxsuite.proxqp.dense.QP(self.n, self.n_eq, self.n_ieq)
         self.initialized = False
 
-    def solve(self, params):
+    def solve(self, params: dict) -> None:
         self.H, self.g, self.C, self.lb = self.compute_params(params)
 
         if not self.initialized:
@@ -23,7 +21,7 @@ class CBFQPSolver:
 
         self.qp.solve()
 
-    def compute_params(self, params):
+    def compute_params(self, params: dict) -> tuple:
         H = (
             2 * params["Jacobian"].T @ params["Jacobian"]
             + 2 * params["nullspace_proj"].T @ params["nullspace_proj"]
@@ -35,9 +33,7 @@ class CBFQPSolver:
             -2
             * (
                 a.T @ params["Jacobian"]
-                + params["dq_nominal"].T
-                @ params["nullspace_proj"].T
-                @ params["nullspace_proj"]
+                + params["dq_nominal"].T @ params["nullspace_proj"].T @ params["nullspace_proj"]
             ).T
         )
 

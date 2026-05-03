@@ -1,25 +1,26 @@
 import time
-from sys import platform
 
 import numpy as np
 
 
 def main():
-    # create environment
-    env = TwoWallsEnv(
-        render_mode="human",
-        record_path=None,
+    from DifferentiableOptimizationCBF.envs.three_blocks_env import ThreeBlocksEnv
+    from DifferentiableOptimizationCBF.three_blocks_controller import (
+        ThreeBlocksController,
     )
 
-    # define solver
-    try:
-        controller = TwoWallsController()
-    except:
-        controller = TwoWallsController()
+    # create environment
+    env = ThreeBlocksEnv(
+        render_mode="human",
+        record_path=None,
+        crude_type="ellipsoid",
+    )
+
+    controller = ThreeBlocksController()
 
     # reset environment
     info = env.reset(
-        cameraDistance=2.0, cameraYaw=-1e-3, cameraPitch=-1e-3, lookat=[0.70, 0.0, 0.55]
+        cameraDistance=2.0, cameraYaw=-1e-3, cameraPitch=-1e-3, lookat=[0.45, 0.0, 0.55]
     )
 
     # initialize clock
@@ -51,11 +52,7 @@ def main():
             history.append(_info)
 
         # compute torque command
-        τ = (
-            6.0 * (dq_target[:, np.newaxis] - dq[:, np.newaxis])
-            + G
-            - 0.1 * dq[:, np.newaxis]
-        )
+        τ = 6.0 * (dq_target[:, np.newaxis] - dq[:, np.newaxis]) + G - 0.1 * dq[:, np.newaxis]
         torques.append(τ)
 
         if i >= 1:
@@ -66,12 +63,4 @@ def main():
 
 
 if __name__ == "__main__":
-    if platform == "darwin":
-        from julia.api import Julia
-
-        jl = Julia(compiled_modules=False)
-
-    from DifferentiableOptimizationCBF.envs.two_walls_env import TwoWallsEnv
-    from DifferentiableOptimizationCBF.two_walls_controller import TwoWallsController
-
     main()

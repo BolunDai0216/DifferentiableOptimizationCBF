@@ -1,27 +1,23 @@
-import pickle
 import time
-from sys import platform
 
 import numpy as np
 
 
 def main():
+    from DifferentiableOptimizationCBF.envs.two_walls_env import TwoWallsEnv
+    from DifferentiableOptimizationCBF.two_walls_controller import TwoWallsController
+
     # create environment
-    env = ThreeBlocksEnv(
+    env = TwoWallsEnv(
         render_mode="human",
         record_path=None,
-        crude_type="ellipsoid",
     )
 
-    # define solver
-    try:
-        controller = ThreeBlocksController()
-    except:
-        controller = ThreeBlocksController()
+    controller = TwoWallsController()
 
     # reset environment
     info = env.reset(
-        cameraDistance=2.0, cameraYaw=-1e-3, cameraPitch=-1e-3, lookat=[0.45, 0.0, 0.55]
+        cameraDistance=2.0, cameraYaw=-1e-3, cameraPitch=-1e-3, lookat=[0.70, 0.0, 0.55]
     )
 
     # initialize clock
@@ -68,14 +64,4 @@ def main():
 
 
 if __name__ == "__main__":
-    if platform == "darwin":
-        from julia.api import Julia
-
-        jl = Julia(compiled_modules=False)
-
-    from DifferentiableOptimizationCBF.envs.three_blocks_env import ThreeBlocksEnv
-    from DifferentiableOptimizationCBF.three_blocks_controller import (
-        ThreeBlocksController,
-    )
-
     main()

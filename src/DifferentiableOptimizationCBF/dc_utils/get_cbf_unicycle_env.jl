@@ -1,6 +1,6 @@
 import DifferentiableCollisions as dc
 
-function get_cbf_unicycle_env(rs::Vector{Float64}, qs::Vector{Float64})
+function get_cbf_unicycle_env(rs::AbstractVector{<:Real}, qs::AbstractVector{<:Real})
     unicycle.r = sa.SVector{3}(rs[1:3])
     unicycle.q = sa.SVector{4}(qs[1:4])
 

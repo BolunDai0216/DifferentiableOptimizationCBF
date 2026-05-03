@@ -5,6 +5,51 @@
 
 This repo contains the codebase of [**Safe Navigation and Obstacle Avoidance Using Differentiable Optimization Based Control Barrier Functions**](https://arxiv.org/abs/2304.08586). For an overview of the paper and a detailed walkthrough of the codebase, please refer to the [official paper website](https://differentiableoptimizationcbf.readthedocs.io/).
 
+## Quickstart
+
+This project uses [`mise`](https://mise.jdx.dev/) to pin Python, Julia, [`uv`](https://docs.astral.sh/uv/), and [`just`](https://just.systems/) to known-good versions. After cloning:
+
+```bash
+# 1. Install mise (one-time, see https://mise.jdx.dev/getting-started.html for alternatives)
+curl https://mise.run | sh
+
+# 2. Trust the project's mise.toml and install the toolchain
+cd DifferentiableOptimizationCBF
+mise trust
+just install
+```
+
+`just install` runs `mise install` (Python 3.11, Julia 1.10, uv, just), then `uv sync` to set up the Python venv at `.venv/`, and triggers `juliacall` to resolve the Julia environment under `.venv/julia_env/` from `juliapkg.json`.
+
+## Running experiments
+
+```bash
+just run-unicycle             # 2D unicycle obstacle avoidance (no GUI)
+just run-unicycle --show_plot # same, with matplotlib trajectory plot
+just run-two-walls            # FR3 manipulator weaving between walls (pybullet GUI)
+just run-three-blocks         # FR3 manipulator avoiding three blocks (pybullet GUI)
+```
+
+To list every available recipe: `just` (or `just --list`).
+
+## Common tasks
+
+| Recipe                          | What it does                                                   |
+| ------------------------------- | -------------------------------------------------------------- |
+| `just install-tools`            | Install pinned python/julia/uv/just via mise                   |
+| `just install`                  | Above, then `uv sync` and Julia env resolution                 |
+| `just run-unicycle [ARGS]`      | Run the unicycle experiment                                    |
+| `just run-two-walls`            | Run the two-walls FR3 experiment                               |
+| `just run-three-blocks`         | Run the three-blocks FR3 experiment                            |
+| `just lint` / `just format`     | Lint/format Python with `ruff` (config in `pyproject.toml`)    |
+| `just check`                    | CI-style lint+format check (read-only)                         |
+| `just clean`                    | Remove `.venv`, `dist`, build artifacts, `__pycache__`         |
+
+## Notes for macOS users
+
+- `pybullet` has no macOS wheels, so on Darwin the project pulls the community fork `pybullet-mm` instead (handled automatically via `tool.uv.override-dependencies` in `pyproject.toml`).
+- `proxsuite` is pinned to `0.6.2` because newer macOS arm64 wheels (`>=0.6.5`) ship with broken RPATHs from the upstream CI. See the comment in `pyproject.toml`.
+
 ## 📖 $\textsf{\large\color{cornflowerblue}{Citation}}$
 
 To cite our paper, please use the following bibtex

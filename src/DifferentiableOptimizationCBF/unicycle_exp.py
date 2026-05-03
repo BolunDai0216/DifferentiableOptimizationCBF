@@ -1,12 +1,24 @@
 import argparse
 import copy
 import time
+from pathlib import Path
 
 import numpy as np
 import proxsuite
 
 from DifferentiableOptimizationCBF.envs.unicycle_env import UnicycleEnv
 from DifferentiableOptimizationCBF.unicycle_plot_utils import plot_unicycle
+
+DC_UTILS_DIR = Path(__file__).parent / "dc_utils"
+
+
+def load_julia_functions():
+    from juliacall import Main as jl
+
+    return (
+        jl.include(str(DC_UTILS_DIR / "unicycle_env_setup.jl")),
+        jl.include(str(DC_UTILS_DIR / "get_cbf_unicycle_env.jl")),
+    )
 
 
 def get_Q_mat(q):
@@ -26,6 +38,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--show_plot", action="store_true")
     args = parser.parse_args()
+
+    unicycle_env_setup, get_cbf_unicycle_env = load_julia_functions()
 
     env = UnicycleEnv()
     env.reset(set_init_state=[-1.0, -3.0, np.pi / 4])
@@ -108,17 +122,4 @@ def main():
 
 
 if __name__ == "__main__":
-    from julia.api import Julia
-
-    jl = Julia(
-        sysimage="/workspace/diffoptcbf-devcontainer/DifferentiableOptimizationCBF/dc_utils/unicycle_sysimage.so",
-        compiled_modules=False,
-    )
-
-    import julia
-
-    j = julia.Julia()
-    unicycle_env_setup = j.include("dc_utils/unicycle_env_setup.jl")
-    get_cbf_unicycle_env = j.include("dc_utils/get_cbf_unicycle_env.jl")
-
     main()
