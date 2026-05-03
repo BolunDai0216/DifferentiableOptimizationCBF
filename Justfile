@@ -22,15 +22,6 @@ run-two-walls:
 run-three-blocks:
     uv run diffoptcbf-three-blocks
 
-# Run the unicycle experiment using a precompiled Julia sysimage.
-run-unicycle-sysimage *ARGS:
-    uv run diffoptcbf-unicycle-sysimage {{ARGS}}
-
-# Build the Julia sysimage for the unicycle experiment (~5 min).
-build-sysimage:
-    cd src/DifferentiableOptimizationCBF/dc_utils && \
-        julia --project={{justfile_directory()}}/.venv/julia_env unicycle_sysimage.jl
-
 # Lint with ruff (autofixable issues fixed in place).
 lint:
     uv run ruff check --fix .

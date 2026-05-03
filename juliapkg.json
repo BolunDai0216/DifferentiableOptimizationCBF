@@ -8,10 +8,6 @@
         "StaticArrays": {
             "uuid": "90137ffa-7385-5640-81b9-e52037218182",
             "version": "1"
-        },
-        "PackageCompiler": {
-            "uuid": "9b87118b-4619-50d2-8e1e-99f35a4d4d9d",
-            "version": "2"
         }
     }
 }

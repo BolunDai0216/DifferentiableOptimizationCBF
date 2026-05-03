@@ -1,56 +1,55 @@
 # Installation
 
-This part of the tutorial provides steps required to run the provided code and tutorials. The following steps are only tested on Ubuntu and MacOS.
+This page describes how to install the project locally. The instructions are tested on Ubuntu and macOS.
 
-## Dev Container (Recommended, but only for Linux Machines)
+The project uses [`mise`](https://mise.jdx.dev/) to pin the toolchain (Python 3.11, Julia 1.10, [`uv`](https://docs.astral.sh/uv/), [`just`](https://just.systems/)), [`uv`](https://docs.astral.sh/uv/) for Python dependencies (declared in `pyproject.toml`), and [`juliacall`](https://juliapy.github.io/PythonCall.jl/) for Julia dependencies (declared in `juliapkg.json`).
 
-To use the dev container, first install docker and the VS Code devcontainer extension: `ms-vscode-remote.remote-containers`. Then, go to the `provisioning` folder and run `bash setup.sh`, which will setup the `.zsh_history` file for the devcontainer which will make the zsh command history persistent over docker builds.
+## Quickstart
 
-After these steps, open a VS Code window in the `DifferentiableOptimizationCBF` directory and press `Shift + Ctrl + P` in VS Code, which will open up the command palette, in the command palette type/search for `Dev Containers: Rebuild and Reopen in Container`. This will start the process of building the devcontainer.
+Install `mise` (one-time, see the [mise install docs](https://mise.jdx.dev/getting-started.html) for alternatives such as Homebrew or apt):
 
-## Local Installation
+```bash
+curl https://mise.run | sh
+```
 
-Below are the steps to install the required dependencies for the code to run locally. The project uses `uv`, Python 3.11, and `juliacall`. Python dependencies are declared in `pyproject.toml`, and Julia dependencies are declared in `juliapkg.json`.
-
-First, clone the package and enter the repository:
+Clone the repository and install the toolchain plus all project dependencies:
 
 ```bash
 git clone https://github.com/BolunDai0216/DifferentiableOptimizationCBF.git
 cd DifferentiableOptimizationCBF
+mise trust
+just install
 ```
 
-If you use `mise`, install the pinned toolchain with:
+`just install` runs `mise install` to fetch the pinned Python, Julia, `uv`, and `just` versions, then `uv sync` to populate the Python virtual environment under `.venv/`, and finally triggers `juliacall` so it resolves and installs the Julia packages declared in `juliapkg.json` into `.venv/julia_env/`.
 
-```bash
-mise install
-```
-
-Otherwise, install `uv`, Python 3.11, and Julia 1.10. Then synchronize the Python environment:
-
-```bash
-uv sync
-```
-
-To include documentation dependencies:
+To include documentation dependencies as well, run:
 
 ```bash
 uv sync --extra docs
 ```
 
-The package uses a standard `src/` layout. Run modules or console entrypoints through `uv` from the repository root, for example:
+## Running Experiments
+
+The project ships several `just` recipes that wrap the console entry points:
+
+```bash
+just run-unicycle             # 2D unicycle obstacle avoidance (no GUI)
+just run-unicycle --show_plot # same, with matplotlib trajectory plot
+just run-two-walls            # FR3 manipulator weaving between walls (pybullet GUI)
+just run-three-blocks         # FR3 manipulator avoiding three blocks (pybullet GUI)
+```
+
+Run `just` (or `just --list`) to see every available recipe, including lint/format helpers (`just lint`, `just format`, `just check`) and `just clean` to remove the virtual environment.
+
+You can also invoke the console scripts directly through `uv` if you prefer:
 
 ```bash
 uv run diffoptcbf-unicycle
 uv run python -m DifferentiableOptimizationCBF.unicycle_exp
 ```
 
-## Using Julia System Images
+## Notes for macOS users
 
-One way to reduce the Julia startup time is to use system images. We provide an example of doing so for the unicycle experiments. To compile the system image, run the following command
-
-```bash
-cd /path/to/DifferentiableOptimizationCBF/src/DifferentiableOptimizationCBF/dc_utils
-julia unicycle_sysimage.jl
-```
-
-To use the system image see the example in [`unicycle_exp_sysimage.py`](https://github.com/BolunDai0216/DifferentiableOptimizationCBF/blob/main/src/DifferentiableOptimizationCBF/unicycle_exp_sysimage.py).
+- `pybullet` has no macOS wheels; on Darwin the project transparently substitutes the community fork `pybullet-mm`, which still imports as `pybullet`. The substitution is configured in `pyproject.toml` under `[tool.uv] override-dependencies`.
+- `proxsuite` is pinned to `0.6.2` because newer macOS arm64 wheels (`>=0.6.5`) ship with broken RPATHs from the upstream CI build pipeline. Bump the pin once upstream republishes correctly relocated wheels.

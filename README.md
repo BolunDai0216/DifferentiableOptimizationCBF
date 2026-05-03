@@ -41,8 +41,6 @@ To list every available recipe: `just` (or `just --list`).
 | `just run-unicycle [ARGS]`      | Run the unicycle experiment                                    |
 | `just run-two-walls`            | Run the two-walls FR3 experiment                               |
 | `just run-three-blocks`         | Run the three-blocks FR3 experiment                            |
-| `just build-sysimage`           | Build the precompiled Julia sysimage for the unicycle exp      |
-| `just run-unicycle-sysimage`    | Run the unicycle experiment with the precompiled sysimage      |
 | `just lint` / `just format`     | Lint/format Python with `ruff` (config in `pyproject.toml`)    |
 | `just check`                    | CI-style lint+format check (read-only)                         |
 | `just clean`                    | Remove `.venv`, `dist`, build artifacts, `__pycache__`         |
