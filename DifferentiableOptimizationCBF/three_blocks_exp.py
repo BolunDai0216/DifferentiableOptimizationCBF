@@ -1,6 +1,4 @@
-import pickle
 import time
-from sys import platform
 
 import numpy as np
 
@@ -13,11 +11,7 @@ def main():
         crude_type="ellipsoid",
     )
 
-    # define solver
-    try:
-        controller = ThreeBlocksController()
-    except:
-        controller = ThreeBlocksController()
+    controller = ThreeBlocksController()
 
     # reset environment
     info = env.reset(
@@ -53,11 +47,7 @@ def main():
             history.append(_info)
 
         # compute torque command
-        τ = (
-            6.0 * (dq_target[:, np.newaxis] - dq[:, np.newaxis])
-            + G
-            - 0.1 * dq[:, np.newaxis]
-        )
+        τ = 6.0 * (dq_target[:, np.newaxis] - dq[:, np.newaxis]) + G - 0.1 * dq[:, np.newaxis]
         torques.append(τ)
 
         if i >= 1:
@@ -68,11 +58,6 @@ def main():
 
 
 if __name__ == "__main__":
-    if platform == "darwin":
-        from julia.api import Julia
-
-        jl = Julia(compiled_modules=False)
-
     from DifferentiableOptimizationCBF.envs.three_blocks_env import ThreeBlocksEnv
     from DifferentiableOptimizationCBF.three_blocks_controller import (
         ThreeBlocksController,

@@ -1,11 +1,11 @@
 import copy
 
 import numpy as np
-from julia import Main
+from juliacall import Main
 from scipy.linalg import block_diag
 from scipy.spatial.transform import Rotation
 
-from DifferentiableOptimizationCBF.base_controller import BaseController
+from DifferentiableOptimizationCBF.base_controller import DC_UTILS_DIR, BaseController
 from DifferentiableOptimizationCBF.cbfqp_solver import CBFQPSolver
 from DifferentiableOptimizationCBF.exp_utils import get_Q_mat
 
@@ -14,8 +14,8 @@ class ThreeBlocksController(BaseController):
     def __init__(self, crude_type="ellipsoid"):
         super().__init__(crude_type=crude_type)
 
-        exp_setup = Main.include("dc_utils/three_blocks_exp_setup.jl")
-        self.get_cbf = Main.include("dc_utils/get_cbf_three_blocks.jl")
+        exp_setup = Main.include(str(DC_UTILS_DIR / "three_blocks_exp_setup.jl"))
+        self.get_cbf = Main.include(str(DC_UTILS_DIR / "get_cbf_three_blocks.jl"))
 
         exp_setup()
 
@@ -79,9 +79,7 @@ class ThreeBlocksController(BaseController):
             for j in range(3):
                 α, J_link = _αs[j][k], np.array(Js[j][k])
                 αs.append(copy.deepcopy(α))
-                Cs.append(
-                    J_link[-1, 7:][np.newaxis, :] @ Q_mat_link @ info[f"J_{link}"]
-                )
+                Cs.append(J_link[-1, 7:][np.newaxis, :] @ Q_mat_link @ info[f"J_{link}"])
 
         lb = -5.0 * (np.array(αs)[:, np.newaxis] - 1.03)
         C = np.concatenate(Cs, axis=0)

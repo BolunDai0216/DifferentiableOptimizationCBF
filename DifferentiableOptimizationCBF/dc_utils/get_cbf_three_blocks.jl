@@ -1,7 +1,7 @@
 include("update_arm.jl")
 include("get_cbf_link_polygon_obstacle.jl")
 
-function get_cbf_three_obstacles(rs::Vector{Float64}, qs::Vector{Float64})
+function get_cbf_three_obstacles(rs::AbstractVector{<:Real}, qs::AbstractVector{<:Real})
     #=
         This function computes the value of
         α and ∂α/∂(r, q) between three polygon 

@@ -1,11 +1,11 @@
 import copy
 
 import numpy as np
-from julia import Main
+from juliacall import Main
 from scipy.linalg import block_diag
 from scipy.spatial.transform import Rotation
 
-from DifferentiableOptimizationCBF.base_controller import BaseController
+from DifferentiableOptimizationCBF.base_controller import DC_UTILS_DIR, BaseController
 from DifferentiableOptimizationCBF.cbfqp_solver import CBFQPSolver
 from DifferentiableOptimizationCBF.exp_utils import get_Q_mat
 
@@ -14,8 +14,8 @@ class TwoWallsController(BaseController):
     def __init__(self, crude_type="capsule"):
         super().__init__(crude_type=crude_type)
 
-        exp_setup = Main.include("dc_utils/two_wall_exp_setup.jl")
-        self.get_cbf = Main.include("dc_utils/get_cbf_two_walls.jl")
+        exp_setup = Main.include(str(DC_UTILS_DIR / "two_wall_exp_setup.jl"))
+        self.get_cbf = Main.include(str(DC_UTILS_DIR / "get_cbf_two_walls.jl"))
 
         exp_setup()
 

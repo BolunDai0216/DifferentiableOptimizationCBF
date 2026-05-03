@@ -1,12 +1,23 @@
 import argparse
 import copy
+import os
 import time
+from pathlib import Path
 
 import numpy as np
 import proxsuite
 
-from DifferentiableOptimizationCBF.envs.unicycle_env import UnicycleEnv
-from DifferentiableOptimizationCBF.unicycle_plot_utils import plot_unicycle
+DC_UTILS_DIR = Path(__file__).parent / "dc_utils"
+
+# juliacall picks this up at first import — must be set before
+# `from juliacall import Main`. See PythonCall.jl docs on PYTHON_JULIACALL_SYSIMAGE.
+os.environ.setdefault(
+    "PYTHON_JULIACALL_SYSIMAGE",
+    str(DC_UTILS_DIR / "unicycle_sysimage.so"),
+)
+
+from DifferentiableOptimizationCBF.envs.unicycle_env import UnicycleEnv  # noqa: E402
+from DifferentiableOptimizationCBF.unicycle_plot_utils import plot_unicycle  # noqa: E402
 
 
 def get_Q_mat(q):
@@ -108,17 +119,9 @@ def main():
 
 
 if __name__ == "__main__":
-    from julia.api import Julia
+    from juliacall import Main as jl
 
-    jl = Julia(
-        sysimage="/workspace/diffoptcbf-devcontainer/DifferentiableOptimizationCBF/dc_utils/unicycle_sysimage.so",
-        compiled_modules=False,
-    )
-
-    import julia
-
-    j = julia.Julia()
-    unicycle_env_setup = j.include("dc_utils/unicycle_env_setup.jl")
-    get_cbf_unicycle_env = j.include("dc_utils/get_cbf_unicycle_env.jl")
+    unicycle_env_setup = jl.include(str(DC_UTILS_DIR / "unicycle_env_setup.jl"))
+    get_cbf_unicycle_env = jl.include(str(DC_UTILS_DIR / "get_cbf_unicycle_env.jl"))
 
     main()

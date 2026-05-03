@@ -1,5 +1,4 @@
 import time
-from sys import platform
 
 import numpy as np
 
@@ -11,11 +10,7 @@ def main():
         record_path=None,
     )
 
-    # define solver
-    try:
-        controller = TwoWallsController()
-    except:
-        controller = TwoWallsController()
+    controller = TwoWallsController()
 
     # reset environment
     info = env.reset(
@@ -66,11 +61,6 @@ def main():
 
 
 if __name__ == "__main__":
-    if platform == "darwin":
-        from julia.api import Julia
-
-        jl = Julia(compiled_modules=False)
-
     from DifferentiableOptimizationCBF.envs.two_walls_env import TwoWallsEnv
     from DifferentiableOptimizationCBF.two_walls_controller import TwoWallsController
 

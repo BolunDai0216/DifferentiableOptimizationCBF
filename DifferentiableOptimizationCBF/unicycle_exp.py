@@ -1,13 +1,15 @@
 import argparse
 import copy
 import time
-from sys import platform
+from pathlib import Path
 
 import numpy as np
 import proxsuite
 
 from DifferentiableOptimizationCBF.envs.unicycle_env import UnicycleEnv
 from DifferentiableOptimizationCBF.unicycle_plot_utils import plot_unicycle
+
+DC_UTILS_DIR = Path(__file__).parent / "dc_utils"
 
 
 def get_Q_mat(q):
@@ -109,15 +111,9 @@ def main():
 
 
 if __name__ == "__main__":
-    if platform == "darwin":
-        from julia.api import Julia
+    from juliacall import Main as jl
 
-        jl = Julia(compiled_modules=False)
-
-    import julia
-
-    j = julia.Julia()
-    unicycle_env_setup = j.include("dc_utils/unicycle_env_setup.jl")
-    get_cbf_unicycle_env = j.include("dc_utils/get_cbf_unicycle_env.jl")
+    unicycle_env_setup = jl.include(str(DC_UTILS_DIR / "unicycle_env_setup.jl"))
+    get_cbf_unicycle_env = jl.include(str(DC_UTILS_DIR / "get_cbf_unicycle_env.jl"))
 
     main()

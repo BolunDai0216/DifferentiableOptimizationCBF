@@ -1,6 +1,6 @@
 import StaticArrays as sa
 
-function update_arm(rs::Vector{Float64}, qs::Vector{Float64})
+function update_arm(rs::AbstractVector{<:Real}, qs::AbstractVector{<:Real})
     #=
         This function updates the position and 
         orientation of all of the robot links.
