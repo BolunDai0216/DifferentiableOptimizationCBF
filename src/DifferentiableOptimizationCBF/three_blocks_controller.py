@@ -89,7 +89,7 @@ class ThreeBlocksController(BaseController):
             "p_error": p_error,
             "p_current": p_current,
             "dp_target": dp_target,
-            "Kp": 0.1 * np.eye(6),
+            "Kp": 1.0 * np.eye(6),
             "dq_nominal": dq_nominal,
             "nullspace_proj": np.eye(9) - pinv_jac @ jacobian,
             "lb": lb,

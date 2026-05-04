@@ -79,9 +79,7 @@ class TwoWallsController(BaseController):
             for j in range(4):
                 α, J_link = _αs[j][k], np.array(Js[j][k])
                 αs.append(copy.deepcopy(α))
-                Cs.append(
-                    J_link[-1, 7:][np.newaxis, :] @ Q_mat_link @ info[f"J_{link}"]
-                )
+                Cs.append(J_link[-1, 7:][np.newaxis, :] @ Q_mat_link @ info[f"J_{link}"])
 
         lb = -5.0 * (np.array(αs)[:, np.newaxis] - 1.03)
         C = np.concatenate(Cs, axis=0)
@@ -91,7 +89,7 @@ class TwoWallsController(BaseController):
             "p_error": p_error,
             "p_current": p_current,
             "dp_target": dp_target,
-            "Kp": 0.1 * np.eye(6),
+            "Kp": 0.2 * np.eye(6),
             "dq_nominal": dq_nominal,
             "nullspace_proj": np.eye(9) - pinv_jac @ jacobian,
             "lb": lb,

@@ -2,11 +2,11 @@ import time
 
 import numpy as np
 
+from DifferentiableOptimizationCBF.envs.two_walls_env import TwoWallsEnv
+from DifferentiableOptimizationCBF.two_walls_controller import TwoWallsController
+
 
 def main():
-    from DifferentiableOptimizationCBF.envs.two_walls_env import TwoWallsEnv
-    from DifferentiableOptimizationCBF.two_walls_controller import TwoWallsController
-
     # create environment
     env = TwoWallsEnv(
         render_mode="human",
@@ -49,8 +49,10 @@ def main():
             history.append(_info)
 
         # compute torque command
+        q_target = dq_target[:, np.newaxis] * env.dt + q[:, np.newaxis]
         τ = (
-            6.0 * (dq_target[:, np.newaxis] - dq[:, np.newaxis])
+            30 * (q_target - q[:, np.newaxis])
+            + 3.0 * (dq_target[:, np.newaxis] - dq[:, np.newaxis])
             + G
             - 0.1 * dq[:, np.newaxis]
         )
