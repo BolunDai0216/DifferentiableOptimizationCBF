@@ -8,7 +8,7 @@ authors = [{ name = "Bolun Dai", email = "bd1555@nyu.edu" }]
 classifiers = ["License :: OSI Approved :: MIT License"]
 requires-python = ">=3.11,<3.12"
 dependencies = [
-  "numpy>=1.24",
+  "numpy>=1.24,<2.0",
   "scipy>=1.10",
   "matplotlib>=3.7",
   # Pinned to 0.6.2: later wheels (>=0.6.5) ship a broken macOS arm64 binary.
@@ -17,7 +17,7 @@ dependencies = [
   # 0.6.2 links against /usr/lib/libc++.1.dylib (absolute system path) and
   # works on macOS arm64 + Linux + Windows. Bump when upstream republishes.
   "proxsuite==0.6.2",
-  "pin>=3.0",
+  "pin>=2.7,<3.0",
   "pybullet>=3.2.5; sys_platform == 'linux'",
   "pybullet-mm>=3.2.7; sys_platform == 'darwin'",
   "juliacall>=0.9.20",
@@ -56,6 +56,11 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.uv]
+# ndcurves 1.4.1 has no CPython 3.11 macOS arm64 wheel and its source
+# build currently fails in the package test target on AppleClang.
+constraint-dependencies = [
+  "ndcurves<1.4 ; sys_platform == 'darwin' and platform_machine == 'arm64'",
+]
 # pybullet has no macOS wheels and fails to build on macOS arm64.
 # On Darwin we use the community fork pybullet-mm, which builds and
 # registers itself as the `pybullet` import. Override FR3Env's transitive
