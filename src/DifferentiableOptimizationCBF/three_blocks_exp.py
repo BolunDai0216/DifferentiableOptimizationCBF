@@ -2,13 +2,11 @@ import time
 
 import numpy as np
 
+from DifferentiableOptimizationCBF.envs.three_blocks_env import ThreeBlocksEnv
+from DifferentiableOptimizationCBF.three_blocks_controller import ThreeBlocksController
+
 
 def main():
-    from DifferentiableOptimizationCBF.envs.three_blocks_env import ThreeBlocksEnv
-    from DifferentiableOptimizationCBF.three_blocks_controller import (
-        ThreeBlocksController,
-    )
-
     # create environment
     env = ThreeBlocksEnv(
         render_mode="human",

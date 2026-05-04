@@ -2,11 +2,11 @@ import time
 
 import numpy as np
 
+from DifferentiableOptimizationCBF.envs.two_walls_env import TwoWallsEnv
+from DifferentiableOptimizationCBF.two_walls_controller import TwoWallsController
+
 
 def main():
-    from DifferentiableOptimizationCBF.envs.two_walls_env import TwoWallsEnv
-    from DifferentiableOptimizationCBF.two_walls_controller import TwoWallsController
-
     # create environment
     env = TwoWallsEnv(
         render_mode="human",
