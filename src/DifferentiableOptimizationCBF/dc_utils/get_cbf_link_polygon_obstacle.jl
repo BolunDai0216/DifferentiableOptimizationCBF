@@ -17,5 +17,13 @@ function get_cbf_link_polygon_obstacle(obstacle)
     α7, _, J7 = dc.proximity_jacobian(obstacle, link7; verbose=false, pdip_tol=1e-6)
     αhand, _, Jhand = dc.proximity_jacobian(obstacle, hand; verbose=false, pdip_tol=1e-6)
 
-    return [α3, α4, α5_1, α5_2, α6, α7, αhand], [J3, J4, J5_1, J5_2, J6, J7, Jhand]
+    return [α3, α4, α5_1, α5_2, α6, α7, αhand], [
+        Array(J3),
+        Array(J4),
+        Array(J5_1),
+        Array(J5_2),
+        Array(J6),
+        Array(J7),
+        Array(Jhand),
+    ]
 end

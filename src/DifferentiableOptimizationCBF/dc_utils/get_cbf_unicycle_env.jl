@@ -7,5 +7,5 @@ function get_cbf_unicycle_env(rs::AbstractVector{<:Real}, qs::AbstractVector{<:R
     α1, _, J1 = dc.proximity_jacobian(obstacle1, unicycle; verbose=false, pdip_tol=1e-6)
     α2, _, J2 = dc.proximity_jacobian(obstacle2, unicycle; verbose=false, pdip_tol=1e-6)
 
-    return [α1, α2], [J1, J2]
+    return [α1, α2], [Array(J1), Array(J2)]
 end

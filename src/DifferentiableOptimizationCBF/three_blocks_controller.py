@@ -77,7 +77,7 @@ class ThreeBlocksController(BaseController):
             Q_mat_link = block_diag(np.eye(3), 0.5 * _Q_mat_link)
 
             for j in range(3):
-                α, J_link = _αs[j][k], np.array(Js[j][k])
+                α, J_link = _αs[j][k], np.array(Js[j][k], copy=True)
                 αs.append(copy.deepcopy(α))
                 Cs.append(J_link[-1, 7:][np.newaxis, :] @ Q_mat_link @ info[f"J_{link}"])
 

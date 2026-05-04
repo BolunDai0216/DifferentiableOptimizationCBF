@@ -116,8 +116,8 @@ def main() -> None:
         Q_mat = get_Q_mat(env.robot_q)
         QF_mat = Q_mat @ env.F_mat
 
-        J1 = np.array(Js[0])[-1, 7:][[0, 1, 3, 4, 5, 6]][np.newaxis, :]
-        J2 = np.array(Js[1])[-1, 7:][[0, 1, 3, 4, 5, 6]][np.newaxis, :]
+        J1 = np.array(Js[0], copy=True)[-1, 7:][[0, 1, 3, 4, 5, 6]][np.newaxis, :]
+        J2 = np.array(Js[1], copy=True)[-1, 7:][[0, 1, 3, 4, 5, 6]][np.newaxis, :]
 
         C1 = J1 @ QF_mat
         C2 = J2 @ QF_mat
