@@ -40,6 +40,41 @@ class Args:
     show_plot: bool = False
 
 
+@dataclass
+class QPSolverConfig:
+    n: int
+    n_eq: int
+    n_ieq: int
+    eps_abs: float = 1.0e-6
+
+
+@dataclass
+class QPProblem:
+    H: np.ndarray
+    g: np.ndarray
+    C: np.ndarray
+    lb: np.ndarray
+
+
+class QPSolver:
+    def __init__(self, cfg: QPSolverConfig) -> None:
+        self.cfg = cfg
+        self.qp = proxsuite.proxqp.dense.QP(self.cfg.n, self.cfg.n_eq, self.cfg.n_ieq)
+        self.initialized = False
+
+    def solve(self, problem: QPProblem) -> None:
+        if not self.initialized:
+            self.qp.init(H=problem.H, g=problem.g, C=problem.C, l=problem.lb)
+            self.qp.settings.eps_abs = self.cfg.eps_abs
+            self.initialized = True
+        else:
+            self.qp.update(H=problem.H, g=problem.g, C=problem.C, l=problem.lb)
+
+        self.qp.solve()
+
+        return self.qp.results.x
+
+
 def main():
     args = tyro.cli(Args)
 
@@ -48,10 +83,9 @@ def main():
     env = UnicycleEnv()
     env.reset(set_init_state=[-1.0, -3.0, np.pi / 4])
     unicycle_env_setup()
-    initialized = False
 
-    # define CBFQP solver
-    qp = proxsuite.proxqp.dense.QP(2, 0, 2)
+    qp_solver_cfg = QPSolverConfig(n=2, n_eq=0, n_ieq=2)
+    qp_solver = QPSolver(qp_solver_cfg)
 
     # task parameters
     target_x = 5.0
@@ -67,9 +101,7 @@ def main():
 
     for i in range(5000):
         # compute performance controller
-        v = kv * np.sqrt(
-            (target_x - env.state[0]) ** 2 + (target_y - env.state[1]) ** 2
-        )
+        v = kv * np.sqrt((target_x - env.state[0]) ** 2 + (target_y - env.state[1]) ** 2)
 
         target_θ = np.arctan2(target_y - env.state[1], target_x - env.state[0])
 
@@ -100,17 +132,10 @@ def main():
         H = np.eye(2)
         g = -control[:, np.newaxis]
 
-        # solve CBFQP
-        if initialized:
-            qp.update(H=H, g=g, C=C, l=lb)
-        else:
-            qp.init(H=H, g=g, C=C, l=lb)
-            initialized = True
-
-        qp.solve()
+        problem = QPProblem(H=H, g=g, C=C, lb=lb)
 
         # Get safe action
-        safe_control = qp.results.x
+        safe_control = qp_solver.solve(problem)
         safe_control = np.clip(safe_control, -20.0, 20.0)
 
         # apply safe action
