@@ -102,9 +102,7 @@ def main() -> None:
     for i in range(5000):
         # compute performance controller
         v = kv * np.sqrt((target_x - env.state[0]) ** 2 + (target_y - env.state[1]) ** 2)
-
         target_θ = np.arctan2(target_y - env.state[1], target_x - env.state[0])
-
         ω = kω * (target_θ - env.state[2])
         control = np.array([v, ω])
 
