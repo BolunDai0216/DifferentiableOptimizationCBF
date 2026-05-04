@@ -2,7 +2,7 @@ import time
 
 import numpy as np
 
-from DifferentiableOptimizationCBF.envs.two_walls_env import TwoWallsEnv
+from DifferentiableOptimizationCBF.envs import TwoWallsEnv
 from DifferentiableOptimizationCBF.two_walls_controller import TwoWallsController
 
 

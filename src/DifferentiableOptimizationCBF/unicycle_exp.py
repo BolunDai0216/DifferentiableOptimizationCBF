@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import proxsuite
 
-from DifferentiableOptimizationCBF.envs.unicycle_env import UnicycleEnv
+from DifferentiableOptimizationCBF.envs import UnicycleEnv
 from DifferentiableOptimizationCBF.unicycle_plot_utils import plot_unicycle
 
 DC_UTILS_DIR = Path(__file__).parent / "dc_utils"

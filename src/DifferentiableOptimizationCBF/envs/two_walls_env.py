@@ -1,7 +1,8 @@
 import pybullet as p
 
 from DifferentiableOptimizationCBF import getDataPath
-from DifferentiableOptimizationCBF.envs.fr3_base_env import FR3BaseEnv
+
+from .fr3_base_env import FR3BaseEnv
 
 
 class TwoWallsEnv(FR3BaseEnv):
