@@ -75,7 +75,7 @@ class QPSolver:
         return self.qp.results.x
 
 
-def main():
+def main() -> None:
     args = tyro.cli(Args)
 
     unicycle_env_setup, get_cbf_unicycle_env = load_julia_functions()
@@ -113,8 +113,7 @@ def main():
         αs, Js = get_cbf_unicycle_env(env.robot_r, env.robot_q)
 
         if i >= 10:
-            # account for JIT run
-            comp_times.append(time.time() - tic)
+            comp_times.append(time.time() - tic)  # account for JIT run
 
         Q_mat = get_Q_mat(env.robot_q)
         QF_mat = Q_mat @ env.F_mat
