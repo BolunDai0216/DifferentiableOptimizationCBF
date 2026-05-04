@@ -1,10 +1,11 @@
-import argparse
 import copy
 import time
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
 import proxsuite
+import tyro
 
 from DifferentiableOptimizationCBF.envs import UnicycleEnv
 from DifferentiableOptimizationCBF.unicycle_plot_utils import plot_unicycle
@@ -34,10 +35,13 @@ def get_Q_mat(q):
     )
 
 
+@dataclass
+class Args:
+    show_plot: bool = False
+
+
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--show_plot", action="store_true")
-    args = parser.parse_args()
+    args = tyro.cli(Args)
 
     unicycle_env_setup, get_cbf_unicycle_env = load_julia_functions()
 
