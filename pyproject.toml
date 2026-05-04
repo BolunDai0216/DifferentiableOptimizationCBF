@@ -21,6 +21,7 @@ dependencies = [
   "pybullet>=3.2.5; sys_platform == 'linux'",
   "pybullet-mm>=3.2.7; sys_platform == 'darwin'",
   "juliacall>=0.9.20",
+  "tyro>=0.8",
   "fr3env @ git+https://github.com/BolunDai0216/FR3Env.git",
 ]
 

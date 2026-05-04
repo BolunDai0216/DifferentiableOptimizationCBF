@@ -2,7 +2,7 @@ import time
 
 import numpy as np
 
-from DifferentiableOptimizationCBF.envs.three_blocks_env import ThreeBlocksEnv
+from DifferentiableOptimizationCBF.envs import ThreeBlocksEnv
 from DifferentiableOptimizationCBF.three_blocks_controller import ThreeBlocksController
 
 
