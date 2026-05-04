@@ -10,3 +10,8 @@ _.python.venv = { path = ".venv", create = true }
 # install or system julia). juliacall manages its own Julia env under
 # .venv/julia_env based on juliapkg.json at the repo root.
 PYTHON_JULIACALL_BINDIR = "{{ env.HOME }}/.local/share/mise/installs/julia/1.10.11/bin"
+# Workaround: Julia 1.10's libjulia.dylib has no LC_RPATH entries on macOS
+# arm64, so when juliacall loads sys.dylib from Python its @rpath/libjulia
+# references can't be resolved. Adding the lib dir to dyld's fallback search
+# fixes it. Not needed on Julia 1.12+ where libjulia ships @loader_path/.
+DYLD_FALLBACK_LIBRARY_PATH = "{{ env.HOME }}/.local/share/mise/installs/julia/1.10.11/lib"
