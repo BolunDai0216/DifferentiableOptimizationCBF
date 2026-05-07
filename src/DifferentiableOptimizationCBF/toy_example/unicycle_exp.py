@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
+import pinocchio as pin
 import proxsuite
 import tyro
 
@@ -34,17 +35,21 @@ def load_julia_functions() -> tuple[Callable[..., Any], Callable[..., Any]]:
     )
 
 
-def get_Q_mat(q):
+def get_Q_mat(quat: pin.Quaternion) -> "NDArray":
     return np.array(
         [
             [1.0, 0.0, 0.0],
             [0.0, 1.0, 0.0],
-            [0.0, 0.0, -q[3]],
-            [0.0, 0.0, q[2]],
-            [0.0, 0.0, -q[1]],
-            [0.0, 0.0, q[0]],
+            [0.0, 0.0, -quat.z],
+            [0.0, 0.0, quat.y],
+            [0.0, 0.0, -quat.x],
+            [0.0, 0.0, quat.w],
         ]
     )
+
+
+def get_F_mat(state: "NDArray") -> "NDArray":
+    return np.array([[np.cos(state[2]), 0.0], [np.sin(state[2]), 0.0], [0.0, 1.0]])
 
 
 @dataclass
@@ -111,13 +116,14 @@ def main() -> None:
 
         # get CBF
         tic = time.time()
-        αs, Js = get_cbf_unicycle_env_jl(env.robot_r, env.robot_q)
+
+        _robot_q_np = np.array([env.robot_q.w, env.robot_q.x, env.robot_q.y, env.robot_q.z])
+        αs, Js = get_cbf_unicycle_env_jl(env.robot_r, _robot_q_np)
 
         if i >= 10:
             comp_times.append(time.time() - tic)  # account for JIT run
 
-        Q_mat = get_Q_mat(env.robot_q)
-        QF_mat = Q_mat @ env.F_mat
+        QF_mat = get_Q_mat(env.robot_q) @ get_F_mat(env.state)
 
         J1 = np.array(Js[0], copy=True)[-1, 7:][[0, 1, 3, 4, 5, 6]][np.newaxis, :]
         J2 = np.array(Js[1], copy=True)[-1, 7:][[0, 1, 3, 4, 5, 6]][np.newaxis, :]

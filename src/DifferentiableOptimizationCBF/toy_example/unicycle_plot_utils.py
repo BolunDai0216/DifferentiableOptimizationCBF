@@ -1,11 +1,16 @@
+from typing import TYPE_CHECKING
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Rectangle, Wedge
 from matplotlib.ticker import MultipleLocator
 from matplotlib.transforms import Affine2D
 
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
 
-def plot_unicycle(history: list[np.ndarray]) -> None:
+
+def plot_unicycle(history: "list[NDArray]") -> None:
     data = np.concatenate(history).reshape(-1, 3)
     fig, ax = plt.subplots(1, 1, figsize=(8, 8))
 
