@@ -32,7 +32,7 @@ Documentation = "https://differentiableoptimizationcbf.readthedocs.io/"
 [project.scripts]
 diffoptcbf-three-blocks = "DifferentiableOptimizationCBF.three_blocks_exp:main"
 diffoptcbf-two-walls = "DifferentiableOptimizationCBF.two_walls_exp:main"
-diffoptcbf-unicycle = "DifferentiableOptimizationCBF.unicycle_exp:main"
+diffoptcbf-unicycle = "DifferentiableOptimizationCBF.toy_example.unicycle_exp:main"
 
 [project.optional-dependencies]
 docs = [
@@ -47,10 +47,7 @@ docs = [
 ]
 
 [dependency-groups]
-dev = [
-  "ruff>=0.6",
-  "ipykernel",
-]
+dev = ["ruff>=0.6", "ipykernel"]
 
 [build-system]
 requires = ["hatchling"]
