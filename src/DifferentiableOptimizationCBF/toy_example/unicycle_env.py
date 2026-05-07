@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 from typing import TYPE_CHECKING
 
@@ -10,12 +12,12 @@ if TYPE_CHECKING:
 
 class UnicycleEnv:
     def __init__(self, dt: float = 0.01) -> None:
-        self.state: NDArray = None
-        self.robot_r: NDArray = None
-        self.robot_q: pin.Quaternion = None
+        self.state: NDArray | None = None
+        self.robot_r: NDArray | None = None
+        self.robot_q: pin.Quaternion | None = None
         self.dt: float = dt
 
-    def reset(self, set_init_state: "NDArray | None" = None) -> None:
+    def reset(self, set_init_state: NDArray | None = None) -> None:
         """
         The robot state is [x, y, θ]
         """
@@ -27,7 +29,7 @@ class UnicycleEnv:
 
         self.update_robot_rq()
 
-    def step(self, action: "NDArray") -> None:
+    def step(self, action: NDArray) -> None:
         """safe_control
         The system dynamics is:
         dx = vcos(θ)

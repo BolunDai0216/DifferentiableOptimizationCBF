@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -15,10 +17,10 @@ class QPSolverCfg:
 
 @dataclass
 class QPProblemCfg:
-    H: "NDArray"
-    g: "NDArray"
-    C: "NDArray"
-    lb: "NDArray"
+    H: NDArray
+    g: NDArray
+    C: NDArray
+    lb: NDArray
 
 
 @dataclass

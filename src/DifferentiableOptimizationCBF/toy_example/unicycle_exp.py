@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 import time
 from collections.abc import Callable
@@ -35,7 +37,7 @@ def load_julia_functions() -> tuple[Callable[..., Any], Callable[..., Any]]:
     )
 
 
-def get_Q_mat(quat: pin.Quaternion) -> "NDArray":
+def get_Q_mat(quat: pin.Quaternion) -> NDArray:
     return np.array(
         [
             [1.0, 0.0, 0.0],
@@ -48,7 +50,7 @@ def get_Q_mat(quat: pin.Quaternion) -> "NDArray":
     )
 
 
-def get_F_mat(state: "NDArray") -> "NDArray":
+def get_F_mat(state: NDArray) -> NDArray:
     return np.array([[np.cos(state[2]), 0.0], [np.sin(state[2]), 0.0], [0.0, 1.0]])
 
 
@@ -61,7 +63,7 @@ class PerformanceController:
     def __init__(self, cfg: PerformanceControllerCfg) -> None:
         self.cfg = cfg
 
-    def __call__(self, state: "NDArray", goal: PerformanceControllerGoalCfg) -> "NDArray":
+    def __call__(self, state: NDArray, goal: PerformanceControllerGoalCfg) -> NDArray:
         v = self.cfg.kv * np.sqrt((goal.x - state[0]) ** 2 + (goal.y - state[1]) ** 2)
         target_θ = np.arctan2(goal.y - state[1], goal.x - state[0])
         ω = self.cfg.kω * (target_θ - state[2])

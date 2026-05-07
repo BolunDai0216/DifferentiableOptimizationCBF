@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
@@ -10,7 +12,7 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
 
-def plot_unicycle(history: "list[NDArray]") -> None:
+def plot_unicycle(history: list[NDArray]) -> None:
     data = np.concatenate(history).reshape(-1, 3)
     fig, ax = plt.subplots(1, 1, figsize=(8, 8))
 
