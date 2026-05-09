@@ -47,8 +47,7 @@ def main() -> None:
 
     # Setup environment
     env = UnicycleEnv()
-    init_state = UnicycleState(x=-1.0, y=-3.0, yaw=np.pi / 4)
-    env.reset(init_state=init_state)
+    env.reset(init_state=UnicycleState(x=-1.0, y=-3.0, yaw=np.pi / 4))
 
     # Setup CBF + controllers
     cbf_evaluator = UnicycleCBFEvaluator()
