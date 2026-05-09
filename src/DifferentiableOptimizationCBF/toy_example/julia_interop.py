@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
 
+from DifferentiableOptimizationCBF.dc_utils import include_jl
+
 if TYPE_CHECKING:
     import pinocchio as pin
     from numpy.typing import NDArray
-
-DC_UTILS_DIR = Path(__file__).parent.parent / "dc_utils"
 
 
 class UnicycleCBFEvaluator:
@@ -20,10 +19,8 @@ class UnicycleCBFEvaluator:
     """
 
     def __init__(self) -> None:
-        from juliacall import Main as jl
-
-        unicycle_env_setup_jl = jl.include(str(DC_UTILS_DIR / "unicycle_env_setup.jl"))
-        self._get_cbf_jl = jl.include(str(DC_UTILS_DIR / "get_cbf_unicycle_env.jl"))
+        unicycle_env_setup_jl = include_jl("unicycle_env_setup.jl")
+        self._get_cbf_jl = include_jl("get_cbf_unicycle_env.jl")
         unicycle_env_setup_jl()
 
     def __call__(

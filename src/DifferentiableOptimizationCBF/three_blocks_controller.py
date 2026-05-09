@@ -1,12 +1,12 @@
 import copy
 
 import numpy as np
-from juliacall import Main
 from scipy.linalg import block_diag
 from scipy.spatial.transform import Rotation
 
-from DifferentiableOptimizationCBF.base_controller import DC_UTILS_DIR, BaseController
+from DifferentiableOptimizationCBF.base_controller import BaseController
 from DifferentiableOptimizationCBF.cbfqp_solver import CBFQPSolver
+from DifferentiableOptimizationCBF.dc_utils import include_jl
 from DifferentiableOptimizationCBF.exp_utils import get_Q_mat
 
 
@@ -14,8 +14,8 @@ class ThreeBlocksController(BaseController):
     def __init__(self, crude_type="ellipsoid"):
         super().__init__(crude_type=crude_type)
 
-        exp_setup = Main.include(str(DC_UTILS_DIR / "three_blocks_exp_setup.jl"))
-        self.get_cbf = Main.include(str(DC_UTILS_DIR / "get_cbf_three_blocks.jl"))
+        exp_setup = include_jl("three_blocks_exp_setup.jl")
+        self.get_cbf = include_jl("get_cbf_three_blocks.jl")
 
         exp_setup()
 

@@ -1,21 +1,18 @@
 import copy
-from pathlib import Path
 
 import FR3Env
 import numpy as np
 import pinocchio as pin
-from juliacall import Main
 from pinocchio.robot_wrapper import RobotWrapper
 from scipy.spatial.transform import Rotation
 
+from DifferentiableOptimizationCBF.dc_utils import include_jl
 from DifferentiableOptimizationCBF.exp_utils import (
     axis_angle_from_rot_mat,
     change_quat_format,
     get_link_config,
     get_R_end_from_start,
 )
-
-DC_UTILS_DIR = Path(__file__).parent / "dc_utils"
 
 
 class BaseController:
@@ -97,9 +94,9 @@ class BaseController:
 
         # load Julia functions
         if crude_type == "ellipsoid":
-            create_arm = Main.include(str(DC_UTILS_DIR / "create_arm_ellipsoid.jl"))
+            create_arm = include_jl("create_arm_ellipsoid.jl")
         elif crude_type == "capsule":
-            create_arm = Main.include(str(DC_UTILS_DIR / "create_arm_capsule.jl"))
+            create_arm = include_jl("create_arm_capsule.jl")
 
         # setup everything in Julia
         create_arm()
