@@ -47,7 +47,7 @@ def main() -> None:
 
     # Setup environment
     env = UnicycleEnv()
-    init_state = UnicycleState(x=-1.0, y=-3.0, theta=np.pi / 4)
+    init_state = UnicycleState(x=-1.0, y=-3.0, yaw=np.pi / 4)
     env.reset(init_state=init_state)
 
     # Setup CBF + controllers
@@ -65,7 +65,7 @@ def main() -> None:
 
         # get CBF
         tic = time.time()
-        αs, J = cbf_evaluator(env.robot_r, env.robot_q)
+        αs, J = cbf_evaluator(env.state)
         if i >= 10:
             comp_times.append(time.time() - tic)  # account for JIT run
 

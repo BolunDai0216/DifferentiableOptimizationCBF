@@ -25,4 +25,9 @@ def get_Q_mat(quat: pin.Quaternion) -> NDArray:
 
 
 def get_F_mat(state: UnicycleState) -> NDArray:
-    return np.array([[np.cos(state.theta), 0.0], [np.sin(state.theta), 0.0], [0.0, 1.0]])
+    return np.array([[np.cos(state.yaw), 0.0], [np.sin(state.yaw), 0.0], [0.0, 1.0]])
+
+
+def quat_from_yaw(yaw: float) -> pin.Quaternion:
+    """Quaternion for a pure yaw rotation about the world z-axis."""
+    return pin.Quaternion(pin.rpy.rpyToMatrix(0.0, 0.0, yaw))

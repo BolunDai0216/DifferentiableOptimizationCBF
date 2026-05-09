@@ -30,6 +30,6 @@ class PerformanceController:
     def __call__(self, state: UnicycleState, goal: PerformanceControllerGoalCfg) -> NDArray:
         v = self.cfg.kv * np.sqrt((goal.x - state.x) ** 2 + (goal.y - state.y) ** 2)
         target_θ = np.arctan2(goal.y - state.y, goal.x - state.x)
-        ω = self.cfg.kω * (target_θ - state.theta)
+        ω = self.cfg.kω * (target_θ - state.yaw)
 
         return np.array([v, ω])

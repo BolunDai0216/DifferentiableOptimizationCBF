@@ -5,10 +5,12 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from DifferentiableOptimizationCBF.dc_utils import include_jl
+from DifferentiableOptimizationCBF.toy_example.unicycle_dynamics import quat_from_yaw
 
 if TYPE_CHECKING:
-    import pinocchio as pin
     from numpy.typing import NDArray
+
+    from DifferentiableOptimizationCBF.toy_example.unicycle_env import UnicycleState
 
 
 class UnicycleCBFEvaluator:
@@ -23,10 +25,11 @@ class UnicycleCBFEvaluator:
         self._get_cbf_jl = include_jl("get_cbf_unicycle_env.jl")
         unicycle_env_setup_jl()
 
-    def __call__(
-        self, robot_r: NDArray, robot_q: pin.Quaternion
-    ) -> tuple[NDArray, NDArray]:
+    def __call__(self, state: UnicycleState) -> tuple[NDArray, NDArray]:
+        robot_r = np.array([state.x, state.y, 0.0])
+        robot_q = quat_from_yaw(state.yaw)
         robot_q_np = np.array([robot_q.w, robot_q.x, robot_q.y, robot_q.z])
+
         αs, Js = self._get_cbf_jl(robot_r, robot_q_np)
 
         αs = np.array(αs, copy=True)
