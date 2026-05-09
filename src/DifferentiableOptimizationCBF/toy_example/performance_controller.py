@@ -1,17 +1,26 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import numpy as np
 
-from DifferentiableOptimizationCBF.toy_example.configs import (
-    PerformanceControllerCfg,
-    PerformanceControllerGoalCfg,
-)
 from DifferentiableOptimizationCBF.toy_example.unicycle_env import UnicycleState
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
+
+
+@dataclass
+class PerformanceControllerCfg:
+    kv: float = 0.5
+    kω: float = 2.0
+
+
+@dataclass
+class PerformanceControllerGoalCfg:
+    x: float
+    y: float
 
 
 class PerformanceController:

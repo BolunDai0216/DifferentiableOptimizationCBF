@@ -1,16 +1,23 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import numpy as np
 
-from DifferentiableOptimizationCBF.toy_example.configs import CBFQPCfg, QPProblemCfg
+from DifferentiableOptimizationCBF.toy_example.qp_solver import QPProblem
 from DifferentiableOptimizationCBF.toy_example.unicycle_dynamics import get_F_mat, get_Q_mat
 
 if TYPE_CHECKING:
     from numpy.typing import NDArray
 
     from DifferentiableOptimizationCBF.toy_example.unicycle_env import UnicycleEnv
+
+
+@dataclass
+class CBFQPCfg:
+    β: float = 1.05
+    γ: float = 1.0
 
 
 class UnicycleCBFQPBuilder:
@@ -30,9 +37,9 @@ class UnicycleCBFQPBuilder:
         αs: NDArray,
         J: NDArray,
         env: UnicycleEnv,
-    ) -> QPProblemCfg:
+    ) -> QPProblem:
         H = np.eye(2)
         g = -nominal_control[:, np.newaxis]
         C = J @ get_Q_mat(env.robot_q) @ get_F_mat(env.state)
         lb = -self.cfg.γ * (αs - self.cfg.β)[:, np.newaxis]
-        return QPProblemCfg(H=H, g=g, C=C, lb=lb)
+        return QPProblem(H=H, g=g, C=C, lb=lb)
