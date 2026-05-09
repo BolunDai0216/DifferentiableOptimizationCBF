@@ -15,7 +15,7 @@ from DifferentiableOptimizationCBF.toy_example.unicycle_dynamics import (
 if TYPE_CHECKING:
     from numpy.typing import NDArray
 
-    from DifferentiableOptimizationCBF.toy_example.unicycle_env import UnicycleEnv
+    from DifferentiableOptimizationCBF.toy_example.unicycle_env import UnicycleState
 
 
 @dataclass
@@ -40,10 +40,10 @@ class UnicycleCBFQPBuilder:
         nominal_control: NDArray,
         αs: NDArray,
         J: NDArray,
-        env: UnicycleEnv,
+        state: UnicycleState,
     ) -> QPProblem:
         H = np.eye(2)
         g = -nominal_control[:, np.newaxis]
-        C = J @ get_Q_mat(quat_from_yaw(env.state.yaw)) @ get_F_mat(env.state)
+        C = J @ get_Q_mat(quat_from_yaw(state.yaw)) @ get_F_mat(state)
         lb = -self.cfg.γ * (αs - self.cfg.β)[:, np.newaxis]
         return QPProblem(H=H, g=g, C=C, lb=lb)

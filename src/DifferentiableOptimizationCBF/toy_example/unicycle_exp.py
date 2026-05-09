@@ -70,7 +70,7 @@ def main() -> None:
             comp_times.append(time.time() - tic)  # account for JIT run
 
         # define CBFQP and get safe action
-        problem = cbfqp_builder(nominal_control, αs, J, env)
+        problem = cbfqp_builder(nominal_control, αs, J, env.state)
         safe_control = cbfqp_solver.solve(problem).clip(
             -args.control_magnitude, args.control_magnitude
         )
