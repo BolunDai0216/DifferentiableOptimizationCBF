@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import sys
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -12,37 +13,26 @@ if TYPE_CHECKING:
     from numpy.typing import NDArray
 
 
+@dataclass
 class UnicycleState:
-    """Unicycle state [x, y, yaw] backed by a numpy array.
+    """Unicycle state [x, y, yaw]."""
 
-    Construct with either an array or x/y/yaw keyword args:
-        UnicycleState(np.array([1.0, 2.0, 0.5]))
-        UnicycleState(x=1.0, y=2.0, yaw=0.5)
-    """
+    x: float
+    y: float
+    yaw: float
 
-    def __init__(
-        self,
-        array: NDArray | None = None,
-        *,
-        x: float | None = None,
-        y: float | None = None,
-        yaw: float | None = None,
-    ) -> None:
-        if array is not None:
-            self.array = np.asarray(array, dtype=float)
-            self.x, self.y, self.yaw = self.array
-        elif x is not None and y is not None and yaw is not None:
-            self.x, self.y, self.yaw = x, y, yaw
-            self.array = np.array([x, y, yaw], dtype=float)
-        else:
+    @classmethod
+    def from_array(cls, array: NDArray) -> UnicycleState:
+        array = np.asarray(array, dtype=float)
+        if array.shape != (3,):
             raise ValueError(
-                f"{type(self).__name__} requires either an array or all of x, y, yaw"
+                f"{cls.__name__} expects an array of shape (3,), got {array.shape}"
             )
+        return cls(*array)
 
-        if self.array.shape != (3,):
-            raise ValueError(
-                f"{type(self).__name__} expects an array of shape (3,), got {self.array.shape}"
-            )
+    @property
+    def array(self) -> NDArray:
+        return np.array([self.x, self.y, self.yaw], dtype=float)
 
 
 class UnicycleEnv:
