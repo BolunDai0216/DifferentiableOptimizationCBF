@@ -19,7 +19,7 @@ from DifferentiableOptimizationCBF.toy_example.configs import (
     QPProblemCfg,
     QPSolverCfg,
 )
-from DifferentiableOptimizationCBF.toy_example.unicycle_env import UnicycleEnv
+from DifferentiableOptimizationCBF.toy_example.unicycle_env import UnicycleEnv, UnicycleState
 from DifferentiableOptimizationCBF.toy_example.unicycle_plot_utils import plot_unicycle
 
 if TYPE_CHECKING:
@@ -50,8 +50,8 @@ def get_Q_mat(quat: pin.Quaternion) -> NDArray:
     )
 
 
-def get_F_mat(state: NDArray) -> NDArray:
-    return np.array([[np.cos(state[2]), 0.0], [np.sin(state[2]), 0.0], [0.0, 1.0]])
+def get_F_mat(state: UnicycleState) -> NDArray:
+    return np.array([[np.cos(state.theta), 0.0], [np.sin(state.theta), 0.0], [0.0, 1.0]])
 
 
 @dataclass
@@ -63,10 +63,10 @@ class PerformanceController:
     def __init__(self, cfg: PerformanceControllerCfg) -> None:
         self.cfg = cfg
 
-    def __call__(self, state: NDArray, goal: PerformanceControllerGoalCfg) -> NDArray:
-        v = self.cfg.kv * np.sqrt((goal.x - state[0]) ** 2 + (goal.y - state[1]) ** 2)
-        target_θ = np.arctan2(goal.y - state[1], goal.x - state[0])
-        ω = self.cfg.kω * (target_θ - state[2])
+    def __call__(self, state: UnicycleState, goal: PerformanceControllerGoalCfg) -> NDArray:
+        v = self.cfg.kv * np.sqrt((goal.x - state.x) ** 2 + (goal.y - state.y) ** 2)
+        target_θ = np.arctan2(goal.y - state.y, goal.x - state.x)
+        ω = self.cfg.kω * (target_θ - state.theta)
 
         return np.array([v, ω])
 
@@ -97,7 +97,8 @@ def main() -> None:
     unicycle_env_setup_jl()
 
     env = UnicycleEnv()
-    env.reset(set_init_state=[-1.0, -3.0, np.pi / 4])
+    init_state = UnicycleState(x=-1.0, y=-3.0, theta=np.pi / 4)
+    env.reset(init_state=init_state)
 
     cbfqp_cfg: CBFQPCfg = CBFQPCfg(β=1.05, γ=1.0)
     performance_controller_cfg: PerformanceControllerCfg = PerformanceControllerCfg(kv=0.5, kω=2.0)
@@ -149,7 +150,7 @@ def main() -> None:
         env.step(safe_control)
 
         # store data
-        history.append(copy.deepcopy(env.state))
+        history.append(copy.deepcopy(env.state.array))
 
     print("Average computation time: ", np.mean(comp_times))
 
