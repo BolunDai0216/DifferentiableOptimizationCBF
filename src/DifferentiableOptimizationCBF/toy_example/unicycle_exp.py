@@ -8,17 +8,16 @@ from dataclasses import dataclass
 import numpy as np
 import tyro
 
+from DifferentiableOptimizationCBF.toy_example.cbf_qp import UnicycleCBFQPBuilder
 from DifferentiableOptimizationCBF.toy_example.configs import (
     CBFQPCfg,
     PerformanceControllerCfg,
     PerformanceControllerGoalCfg,
-    QPProblemCfg,
     QPSolverCfg,
 )
-from DifferentiableOptimizationCBF.toy_example.julia_interop import load_julia_functions
+from DifferentiableOptimizationCBF.toy_example.julia_interop import UnicycleCBFEvaluator
 from DifferentiableOptimizationCBF.toy_example.performance_controller import PerformanceController
 from DifferentiableOptimizationCBF.toy_example.qp_solver import QPSolver
-from DifferentiableOptimizationCBF.toy_example.unicycle_dynamics import get_F_mat, get_Q_mat
 from DifferentiableOptimizationCBF.toy_example.unicycle_env import UnicycleEnv, UnicycleState
 from DifferentiableOptimizationCBF.toy_example.unicycle_plot_utils import plot_unicycle
 
@@ -48,16 +47,14 @@ def main() -> None:
     )
     qp_solver_cfg: QPSolverCfg = QPSolverCfg(n=2, n_eq=0, n_ieq=2)
 
-    # Setup Julia functions
-    unicycle_env_setup_jl, get_cbf_unicycle_env_jl = load_julia_functions()
-    unicycle_env_setup_jl()
-
     # Setup environment
     env = UnicycleEnv()
     init_state = UnicycleState(x=-1.0, y=-3.0, theta=np.pi / 4)
     env.reset(init_state=init_state)
 
-    # Setup controllers
+    # Setup CBF + controllers
+    cbf_evaluator = UnicycleCBFEvaluator()
+    cbfqp_builder = UnicycleCBFQPBuilder(cbfqp_cfg)
     cbfqp_solver = QPSolver(qp_solver_cfg)
     performance_controller = PerformanceController(performance_controller_cfg)
 
@@ -70,28 +67,13 @@ def main() -> None:
 
         # get CBF
         tic = time.time()
-
-        _robot_q_np = np.array([env.robot_q.w, env.robot_q.x, env.robot_q.y, env.robot_q.z])
-        αs, Js = get_cbf_unicycle_env_jl(env.robot_r, _robot_q_np)
-
+        αs, J = cbf_evaluator(env.robot_r, env.robot_q)
         if i >= 10:
             comp_times.append(time.time() - tic)  # account for JIT run
 
-        J = np.vstack(
-            (
-                np.array(Js[0][-1:, 7:], copy=True)[:, [0, 1, 3, 4, 5, 6]],
-                np.array(Js[1][-1:, 7:], copy=True)[:, [0, 1, 3, 4, 5, 6]],
-            )
-        )
-
-        # define CBFQP
-        H = np.eye(2)
-        g = -nominal_control[:, np.newaxis]
-        C = J @ get_Q_mat(env.robot_q) @ get_F_mat(env.state)
-        lb = -cbfqp_cfg.γ * (np.array(αs, copy=True) - cbfqp_cfg.β)[:, np.newaxis]
-
-        # Get safe action
-        safe_control = cbfqp_solver.solve(QPProblemCfg(H=H, g=g, C=C, lb=lb)).clip(
+        # define CBFQP and get safe action
+        problem = cbfqp_builder(nominal_control, αs, J, env)
+        safe_control = cbfqp_solver.solve(problem).clip(
             -args.control_magnitude, args.control_magnitude
         )
 

@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 import numpy as np
 import pinocchio as pin
 
+from DifferentiableOptimizationCBF.toy_example.unicycle_dynamics import get_F_mat
+
 if TYPE_CHECKING:
     from numpy.typing import NDArray
 
@@ -78,10 +80,7 @@ class UnicycleEnv:
         if action.shape == (2,):
             action = action[:, np.newaxis]
 
-        F_mat = np.array(
-            [[np.cos(self.state.theta), 0.0], [np.sin(self.state.theta), 0.0], [0.0, 1.0]]
-        )
-        dstate = (F_mat @ action)[:, 0]
+        dstate = (get_F_mat(self.state) @ action)[:, 0]
 
         self.state = UnicycleState(
             x=self.state.x + dstate[0] * self.dt,

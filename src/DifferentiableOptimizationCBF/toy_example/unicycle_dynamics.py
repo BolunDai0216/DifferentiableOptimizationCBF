@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING
 import numpy as np
 import pinocchio as pin
 
-from DifferentiableOptimizationCBF.toy_example.unicycle_env import UnicycleState
-
 if TYPE_CHECKING:
     from numpy.typing import NDArray
+
+    from DifferentiableOptimizationCBF.toy_example.unicycle_env import UnicycleState
 
 
 def get_Q_mat(quat: pin.Quaternion) -> NDArray:
