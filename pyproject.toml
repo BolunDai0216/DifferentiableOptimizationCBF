@@ -58,6 +58,7 @@ build-backend = "hatchling.build"
 # build currently fails in the package test target on AppleClang.
 constraint-dependencies = [
   "ndcurves<1.4 ; sys_platform == 'darwin' and platform_machine == 'arm64'",
+  "urllib3>=2.7.0",
 ]
 # pybullet has no macOS wheels and fails to build on macOS arm64.
 # On Darwin we use the community fork pybullet-mm, which builds and
