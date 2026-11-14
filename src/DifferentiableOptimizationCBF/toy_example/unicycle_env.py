@@ -25,9 +25,7 @@ class UnicycleState:
     def from_array(cls, array: NDArray) -> UnicycleState:
         array = np.asarray(array, dtype=float)
         if array.shape != (3,):
-            raise ValueError(
-                f"{cls.__name__} expects an array of shape (3,), got {array.shape}"
-            )
+            raise ValueError(f"{cls.__name__} expects an array of shape (3,), got {array.shape}")
         return cls(*array)
 
     @property

@@ -9,14 +9,16 @@ To run the three simulation examples, first follow the installation process, the
 
 ```bash
 # For the unicycle example, run the following command
-uv run diffoptcbf-unicycle
+just run-unicycle
 
 # For the three-blocks example, run the following command
-uv run diffoptcbf-three-blocks
+just run-three-blocks
 
 # For the two-walls example, run the following command
-uv run diffoptcbf-two-walls
+just run-two-walls
 ```
+
+The two FR3 examples open the MuJoCo viewer, add `--headless` to run them without it. The recipes wrap the console scripts `diffoptcbf-unicycle`, `diffoptcbf-three-blocks` and `diffoptcbf-two-walls` (on macOS the MuJoCo viewer needs the `mjpython` launcher, which the recipes take care of).
 
 Note that because of the JIT compilation of Julia, it takes a while to start the simulation.
 

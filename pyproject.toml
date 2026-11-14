@@ -18,8 +18,8 @@ dependencies = [
   # works on macOS arm64 + Linux + Windows. Bump when upstream republishes.
   "proxsuite==0.6.2",
   "pin>=2.7,<3.0",
-  "pybullet>=3.2.5; sys_platform == 'linux'",
-  "pybullet-mm>=3.2.7; sys_platform == 'darwin'",
+  # 4.0.0 has a sparse Cholesky bug that breaks the Newton solver (fixed in 4.0.1).
+  "mujoco>=4.0.1,<5",
   "juliacall>=0.9.20",
   "tyro>=0.8",
   "fr3env @ git+https://github.com/BolunDai0216/FR3Env.git",
@@ -30,8 +30,9 @@ Homepage = "https://github.com/BolunDai0216/DifferentiableOptimizationCBF"
 Documentation = "https://differentiableoptimizationcbf.readthedocs.io/"
 
 [project.scripts]
-diffoptcbf-three-blocks = "DifferentiableOptimizationCBF.three_blocks_exp:main"
-diffoptcbf-two-walls = "DifferentiableOptimizationCBF.two_walls_exp:main"
+diffoptcbf-three-blocks = "DifferentiableOptimizationCBF.manipulator.manipulator_exp:three_blocks_main"
+diffoptcbf-two-walls = "DifferentiableOptimizationCBF.manipulator.manipulator_exp:two_walls_main"
+diffoptcbf-manipulator = "DifferentiableOptimizationCBF.manipulator.manipulator_exp:main"
 diffoptcbf-unicycle = "DifferentiableOptimizationCBF.toy_example.unicycle_exp:main"
 
 [project.optional-dependencies]
@@ -47,24 +48,20 @@ docs = [
 ]
 
 [dependency-groups]
-dev = ["ruff>=0.6", "ipykernel"]
+dev = ["ruff>=0.6", "ipykernel", "pytest>=8"]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.uv]
-# ndcurves 1.4.1 has no CPython 3.11 macOS arm64 wheel and its source
-# build currently fails in the package test target on AppleClang.
-constraint-dependencies = [
-  "ndcurves<1.4 ; sys_platform == 'darwin' and platform_machine == 'arm64'",
-  "urllib3>=2.7.0",
-]
-# pybullet has no macOS wheels and fails to build on macOS arm64.
-# On Darwin we use the community fork pybullet-mm, which builds and
-# registers itself as the `pybullet` import. Override FR3Env's transitive
-# requirement so it's only enforced on Linux.
-override-dependencies = ["pybullet ; sys_platform == 'linux'"]
+constraint-dependencies = ["urllib3>=2.7.0"]
+# fr3env is only used for its robot description files (URDF, MJCF, meshes),
+# but it declares the dependencies of its pybullet environments. Drop the
+# ones that do not install everywhere and that nothing here imports:
+# pybullet has no macOS wheels and fails to build on macOS arm64, ndcurves
+# has no CPython 3.11 macOS arm64 wheel for its latest release.
+exclude-dependencies = ["pybullet", "ndcurves"]
 
 [tool.hatch.metadata]
 allow-direct-references = true

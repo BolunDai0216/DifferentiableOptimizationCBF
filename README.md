@@ -33,8 +33,8 @@ just install
 ```bash
 just run-unicycle             # 2D unicycle obstacle avoidance (no GUI)
 just run-unicycle --show_plot # same, with matplotlib trajectory plot
-just run-two-walls            # FR3 manipulator weaving between walls (pybullet GUI)
-just run-three-blocks         # FR3 manipulator avoiding three blocks (pybullet GUI)
+just run-two-walls            # FR3 manipulator weaving between walls (MuJoCo viewer)
+just run-three-blocks         # FR3 manipulator avoiding three blocks (MuJoCo viewer)
 ```
 
 To list every available recipe: `just` (or `just --list`).
@@ -54,7 +54,8 @@ To list every available recipe: `just` (or `just --list`).
 
 ## Notes for macOS users
 
-- `pybullet` has no macOS wheels, so on Darwin the project pulls the community fork `pybullet-mm` instead (handled automatically via `tool.uv.override-dependencies` in `pyproject.toml`).
+- The FR3 experiments are simulated with [MuJoCo](https://mujoco.readthedocs.io/) 4. On macOS its interactive viewer only works when Python is started through the `mjpython` launcher that ships with the `mujoco` package; `just run-two-walls` and `just run-three-blocks` take care of this. If you start a script that opens the viewer yourself, use `uv run mjpython ...` instead of `uv run python ...` (the simulation environment raises an error explaining this otherwise). When `mjpython` fails with `Library not loaded: @rpath/libpython3.11.dylib`, add the directory printed by `uv run python -c 'import sysconfig; print(sysconfig.get_config_var("LIBDIR"))'` to `DYLD_FALLBACK_LIBRARY_PATH`, as the `just` recipes do.
+- `fr3env` is only used for its robot description files (URDF, MJCF, meshes). Its `pybullet` and `ndcurves` requirements, which do not install cleanly on macOS arm64 and are not needed here, are dropped via `tool.uv.exclude-dependencies` in `pyproject.toml`.
 - `proxsuite` is pinned to `0.6.2` because newer macOS arm64 wheels (`>=0.6.5`) ship with broken RPATHs from the upstream CI. See the comment in `pyproject.toml`.
 
 ## 📖 $\textsf{\large\color{cornflowerblue}{Citation}}$
