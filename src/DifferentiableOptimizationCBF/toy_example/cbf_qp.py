@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from DifferentiableOptimizationCBF.toy_example.qp_solver import QPProblem
+from DifferentiableOptimizationCBF.qp_solver import QPProblem
 from DifferentiableOptimizationCBF.toy_example.unicycle_dynamics import (
     get_F_mat,
     get_Q_mat,

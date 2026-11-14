@@ -8,6 +8,7 @@ from dataclasses import dataclass
 import numpy as np
 import tyro
 
+from DifferentiableOptimizationCBF.qp_solver import QPSolver, QPSolverCfg
 from DifferentiableOptimizationCBF.toy_example.cbf_qp import CBFQPCfg, UnicycleCBFQPBuilder
 from DifferentiableOptimizationCBF.toy_example.julia_interop import UnicycleCBFEvaluator
 from DifferentiableOptimizationCBF.toy_example.performance_controller import (
@@ -15,7 +16,6 @@ from DifferentiableOptimizationCBF.toy_example.performance_controller import (
     PerformanceControllerCfg,
     PerformanceControllerGoalCfg,
 )
-from DifferentiableOptimizationCBF.toy_example.qp_solver import QPSolver, QPSolverCfg
 from DifferentiableOptimizationCBF.toy_example.unicycle_env import UnicycleEnv, UnicycleState
 from DifferentiableOptimizationCBF.toy_example.unicycle_plot_utils import plot_unicycle
 
